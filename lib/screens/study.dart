@@ -1,7 +1,9 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ic.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Question {
   final String question;
@@ -44,7 +46,8 @@ class StudyScreen extends StatefulWidget {
 
 class _StudyScreenState extends State<StudyScreen> {
   final Duration duration = const Duration(seconds: 1);
-
+  PageController _pageController = PageController(initialPage: 0);
+  int currentQuestionIndex = 0;
   void increaseProgress() {
     setState(() {
       widget.blueCard--;
@@ -68,16 +71,53 @@ class _StudyScreenState extends State<StudyScreen> {
                 increaseProgress: increaseProgress,
               ),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Study content goes here'), // Updated text
-                    ElevatedButton(
-                      onPressed: increaseProgress,
-                      child: Text('Increase Progress'),
-                    ),
-                  ],
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.questions.length,
+                  itemBuilder: (context, index) {
+                    return SlidingUpPanel(
+                        minHeight: 80,
+                        maxHeight: 13 * MediaQuery.of(context).size.height / 20,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24.0),
+                          topRight: Radius.circular(24.0),
+                        ),
+                        panel: AnswersExpandedPanel(
+                            answers: widget.questions[index].answers),
+
+                        collapsed: Container(
+                          decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(24.0),
+                                topRight: Radius.circular(24.0),
+                              )
+                          ),
+                          child: Column(
+                            children: [
+                              PanelHeaderRectangle(),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Iconify(Ic.baseline_swipe_up, color: Colors.blue),
+                                    ), // Icon left-aligned
+                                    Text("Xem đáp án"), // Text in the middle
+                                    Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Iconify(Ic.baseline_swipe_up, color: Colors.blue),
+                                    ), // Icon right-aligned
+                                  ],
+                                ),
+                            ],
+                          ),
+                          ),
+                        body: Center(
+                          child: Text(
+                              "This is the Widget behind the sliding panel"),
+                        ));
+                  },
                 ),
               ),
             ],
@@ -138,7 +178,7 @@ class StudyAppBar extends StatelessWidget {
               children: <Widget>[
                 // Left Aligned Rich Text
                 Padding(
-                  padding: const EdgeInsets.only(top : 5.0),
+                  padding: const EdgeInsets.only(top: 5.0),
                   child: RichText(
                     text: TextSpan(
                       children: [
@@ -146,17 +186,13 @@ class StudyAppBar extends StatelessWidget {
                           text: blueCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(
-                                  color: Colors.blue,
-                                  offset: Offset(0, -3))
+                              Shadow(color: Colors.blue, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
-                            decoration:
-                            TextDecoration.underline,
+                            decoration: TextDecoration.underline,
                             decorationColor: Colors.blue,
                             decorationThickness: 2,
-                            decorationStyle:
-                            TextDecorationStyle.solid,
+                            decorationStyle: TextDecorationStyle.solid,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -166,9 +202,7 @@ class StudyAppBar extends StatelessWidget {
                           text: redCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(
-                                  color: Colors.red,
-                                  offset: Offset(0, -3))
+                              Shadow(color: Colors.red, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
                             fontSize: 16,
@@ -180,9 +214,7 @@ class StudyAppBar extends StatelessWidget {
                           text: greenCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(
-                                  color: Colors.green,
-                                  offset: Offset(0, -3))
+                              Shadow(color: Colors.green, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
                             fontSize: 16,
@@ -199,7 +231,8 @@ class StudyAppBar extends StatelessWidget {
                     color: Color(0xffFFE6A7),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  padding: EdgeInsets.only(left: 10, right: 10, top: 6, bottom: 6),
+                  padding:
+                      EdgeInsets.only(left: 10, right: 10, top: 6, bottom: 6),
                   child: Text(
                     xpEarned.toString() + ' XP',
                     style: TextStyle(
@@ -271,3 +304,85 @@ class CurvedProgressBar extends StatelessWidget {
     );
   }
 }
+
+class PanelHeaderRectangle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 20, // Adjust the height as needed
+      child: Center(
+        child: Container(
+          width: 59, // Adjust the width of the inner rectangle
+          height: 8, // Adjust the height of the inner rectangle
+          decoration: BoxDecoration(
+            color: Color(0xffC7C6C6), // Change the inner rectangle color
+            borderRadius:
+                BorderRadius.circular(10), // Adjust the inner border radius
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AnswersExpandedPanel extends StatefulWidget {
+  final List<String> answers;
+
+  AnswersExpandedPanel({required this.answers});
+
+  List<bool> selectedAnswers = List.filled(4, false);
+
+  @override
+  _AnswersExpandedPanelState createState() => _AnswersExpandedPanelState();
+}
+
+class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        PanelHeaderRectangle(),
+        Expanded(
+          child: Container(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              itemCount: widget.answers.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    // Toggle the selected state of the answer when tapped
+                    setState(() {
+                      widget.selectedAnswers[index] =
+                          !widget.selectedAnswers[index];
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: widget.selectedAnswers[index]
+                            ? Colors.blue
+                            : Colors.grey, // Border color
+                      ),
+                      color: widget.selectedAnswers[index]
+                          ? Colors.blue
+                          : Colors.white, // Inner color
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget.answers[index], // Display full answer
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
