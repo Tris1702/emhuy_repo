@@ -27,18 +27,28 @@ class _GamePageState extends State<GamePage> {
                     question: "What is the capital of France?",
                     answers: ["Paris", "London", "Berlin", "Madrid"],
                     correctAnswer: "Paris",
+                    cardType: 0,
                     sm2Interval: 3,
+                  ),
+                  Question(
+                    question: "What is the capital of France?1",
+                    answers: ["Pari1s", "Lond1on", "Berli1n", "Ma1drid"],
+                    correctAnswer: "Pari1s",
+                    cardType: 0,
+                    sm2Interval: 1,
                   ),
                   Question(
                     question: "Which planet is known as the Red Planet?",
                     answers: ["Earth", "Mars", "Venus", "Jupiter"],
                     correctAnswer: "Mars",
+                    cardType: 1,
                     sm2Interval: 3,
                   ),
                   Question(
                     question: "What is the largest mammal in the world?",
                     answers: ["Lion", "Elephant", "Blue Whale", "Giraffe"],
                     correctAnswer: "Blue Whale",
+                    cardType: 2,
                     sm2Interval: 3,
                   ),
                   // Add more mock questions as needed
