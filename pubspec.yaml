@@ -70,6 +70,11 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/home/userImage.png
+    - assets/home/lessons/lesson1.png
+    - assets/home/lessons/lesson2.png
+    - assets/home/lessons/lesson3.png
+    - assets/home/lessons/lesson4.png
+    - assets/home/lessons/lesson5.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
