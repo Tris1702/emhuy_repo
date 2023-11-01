@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
+import 'package:iconify_flutter/icons/teenyicons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Question {
@@ -76,43 +77,50 @@ class _StudyScreenState extends State<StudyScreen> {
                   itemCount: widget.questions.length,
                   itemBuilder: (context, index) {
                     return SlidingUpPanel(
-                        minHeight: 80,
-                        maxHeight: 13 * MediaQuery.of(context).size.height / 20,
+                        parallaxEnabled: true,
+                        minHeight: 85,
+                        maxHeight: 490,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24.0),
                           topRight: Radius.circular(24.0),
                         ),
                         panel: AnswersExpandedPanel(
                             answers: widget.questions[index].answers),
-
                         collapsed: Container(
                           decoration: const BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(24.0),
                                 topRight: Radius.circular(24.0),
-                              )
-                          ),
+                              )),
                           child: Column(
                             children: [
-                              PanelHeaderRectangle(),
+                              PanelHeaderRectangle(reverseOrder: true),
                               Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Iconify(Ic.baseline_swipe_up, color: Colors.blue),
-                                    ), // Icon left-aligned
-                                    Text("Xem đáp án"), // Text in the middle
-                                    Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Iconify(Ic.baseline_swipe_up, color: Colors.blue),
-                                    ), // Icon right-aligned
-                                  ],
-                                ),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Iconify(Ic.baseline_swipe_up,
+                                        color: Colors.blue),
+                                  ), // Icon left-aligned
+                                  Text("XEM ĐÁP ÁN",
+                                      style: TextStyle(
+                                          color: Color(0xffA6A6C6),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight
+                                              .bold)), // Text in the middle
+                                  Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Iconify(Ic.baseline_swipe_up,
+                                        color: Colors.blue),
+                                  ), // Icon right-aligned
+                                ],
+                              ),
                             ],
                           ),
-                          ),
+                        ),
                         body: Center(
                           child: Text(
                               "This is the Widget behind the sliding panel"),
@@ -306,19 +314,65 @@ class CurvedProgressBar extends StatelessWidget {
 }
 
 class PanelHeaderRectangle extends StatelessWidget {
+  final bool reverseOrder;
+  PanelHeaderRectangle({required this.reverseOrder});
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 20, // Adjust the height as needed
+      height: 30, // Adjust the height as needed
       child: Center(
-        child: Container(
-          width: 59, // Adjust the width of the inner rectangle
-          height: 8, // Adjust the height of the inner rectangle
-          decoration: BoxDecoration(
-            color: Color(0xffC7C6C6), // Change the inner rectangle color
-            borderRadius:
-                BorderRadius.circular(10), // Adjust the inner border radius
-          ),
+        child: Column(
+          children: reverseOrder
+              ? <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 3.0),
+                    child: Container(
+                      width: 15, // Adjust the width of the inner rectangle
+                      height: 5, // Adjust the height of the inner rectangle
+                      decoration: BoxDecoration(
+                        color: Color(
+                            0xffC7C6C6), // Change the inner rectangle color
+                        borderRadius: BorderRadius.circular(
+                            10), // Adjust the inner border radius
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 30, // Adjust the width of the inner rectangle
+                    height: 5, // Adjust the height of the inner rectangle
+                    decoration: BoxDecoration(
+                      color:
+                          Color(0xffC7C6C6), // Change the inner rectangle color
+                      borderRadius: BorderRadius.circular(
+                          10), // Adjust the inner border radius
+                    ),
+                  ),
+                ]
+              : <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 3.0),
+                    child: Container(
+                      width: 30, // Adjust the width of the inner rectangle
+                      height: 5, // Adjust the height of the inner rectangle
+                      decoration: BoxDecoration(
+                        color: Color(
+                            0xffC7C6C6), // Change the inner rectangle color
+                        borderRadius: BorderRadius.circular(
+                            10), // Adjust the inner border radius
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 15, // Adjust the width of the inner rectangle
+                    height: 5, // Adjust the height of the inner rectangle
+                    decoration: BoxDecoration(
+                      color:
+                          Color(0xffC7C6C6), // Change the inner rectangle color
+                      borderRadius: BorderRadius.circular(
+                          10), // Adjust the inner border radius
+                    ),
+                  ),
+                ],
         ),
       ),
     );
@@ -337,52 +391,142 @@ class AnswersExpandedPanel extends StatefulWidget {
 }
 
 class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
+  bool isCorrectVisible = false;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        PanelHeaderRectangle(),
+        PanelHeaderRectangle(reverseOrder: false),
         Expanded(
-          child: Container(
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              itemCount: widget.answers.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Toggle the selected state of the answer when tapped
-                    setState(() {
-                      widget.selectedAnswers[index] =
-                          !widget.selectedAnswers[index];
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: widget.selectedAnswers[index]
-                            ? Colors.blue
-                            : Colors.grey, // Border color
-                      ),
-                      color: widget.selectedAnswers[index]
-                          ? Colors.blue
-                          : Colors.white, // Inner color
+          child: Stack(
+            children: [
+              SizedBox(
+                height: 380,
+                child: Container(
+                  padding: EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0),
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10.0, // Adjust the horizontal spacing
+                      mainAxisSpacing: 10.0, // Adjust the vertical spacing
                     ),
-                    child: Center(
-                      child: Text(
-                        widget.answers[index], // Display full answer
+                    itemCount: widget.answers.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          // Toggle the selected state of the answer when tapped
+                          setState(() {
+                            widget.selectedAnswers[index] =
+                                !widget.selectedAnswers[index];
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin:
+                                  Alignment.bottomCenter, // Start from the bottom
+                              end: Alignment.topCenter, // End at the top
+                              stops: [0.04, 0.04], // Adjust the stops as needed
+                              colors: [
+                                widget.selectedAnswers[index]
+                                    ? Color(0xff74CCF2)
+                                    : Color(0xffC7C6C6),
+                                Colors.white
+                              ],
+                            ),
+                            border: Border.all(
+                              color: widget.selectedAnswers[index]
+                                  ? Color(0xff74CCF2)
+                                  : Color(0xffC7C6C6),
+                              width: 3.0,
+                            ),
+                            color: widget.selectedAnswers[index]
+                                ? Color(0xff74CCF2)
+                                : Colors.white, // Inner color
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.answers[index], // Display full answer
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              Positioned(
+                  bottom: isCorrectVisible ? 0 : -130,
+                  left: 0,
+                  right: 0,
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 180), // Adjust the animation duration
+                    height: isCorrectVisible ? 130 : 0,
+                    color: Color(0xffd6fcb8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Row(
+                          children: [
+                            Iconify(Teenyicons.tick_circle_solid, color: Color(0xff3a8c40), size: 20,),
+                            SizedBox(width: 10),
+                            Text(
+                              'Chính xác!',
+                              style: TextStyle(
+                                color: Color(0xff3a8c40),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              Positioned(
+                bottom: 17,
+                left: 16,
+                child: SizedBox(
+                  height: 55,
+                  child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          print("Button Clicked");
+                          isCorrectVisible = true;
+                        });
+                      },
+                      child: Container(
+                        width: 360,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter, // Start from the bottom
+                            end: Alignment.topCenter, // End at the top
+                            stops: [0.1, 0.1], // Adjust the stops as needed
+                            colors: [Color(0xff3a8c40), Color(0xff75E840)],
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'KIỂM TRA',
+                            style: TextStyle(
+                              color: Color(0xff3a8c40),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      )),
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 }
-
