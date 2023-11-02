@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vietcard/screens/home/category_list_view.dart';
-import 'package:vietcard/screens/home/model/category.dart';
+import 'package:vietcard/screens/home/popular_list_view.dart';
 
 class HomePage extends StatefulWidget {
   static const title = 'Home';
@@ -31,8 +31,9 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: <Widget>[
                       getStudyingFlashcardUI(),
-                      getNewFlashcardUI(),
-                      Flexible(child: getAllFlashcardUI()),
+                      Flexible(
+                        child: getPopularFlashcardUI(),
+                      ),
                     ],
                   ),
                 ),
@@ -101,7 +102,7 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.only(left: 15),
                 child: Text(
                   'Recently',
                   textAlign: TextAlign.left,
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(5.0),
+                  padding: EdgeInsets.only(right: 10),
                   child: Text(
                     'See all >',
                     textAlign: TextAlign.right,
@@ -137,7 +138,6 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ]
-
     );
   }
 
@@ -150,10 +150,72 @@ class _HomePageState extends State<HomePage> {
     // );
   }
 
-  Widget getNewFlashcardUI() {
-    return Text("New");
+  Widget getPopularFlashcardUI() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0, left: 18, right: 16),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 15),
+                  child: Text(
+                    'Popular Flashcard',
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: Text(
+                      'See all >',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        height: 1.5,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                        letterSpacing: 0.3,
+                        color: Color(0xFF3A5160),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          Flexible(
+            child: PopularListView(
+              callBack: () {
+                moveTo();
+              },
+            ),
+          ),
+        ]
+      ),
+    );
   }
   Widget getAllFlashcardUI() {
     return Text("All");
+  }
+}
+
+class HexColor extends Color {
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll('#', '');
+    if (hexColor.length == 6) {
+      hexColor = 'FF' + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
   }
 }

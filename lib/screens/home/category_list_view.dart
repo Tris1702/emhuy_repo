@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vietcard/screens/home/model/category.dart';
+import 'package:vietcard/screens/home.dart';
 
 class CategoryListView extends StatefulWidget {
   const CategoryListView({Key? key, this.callBack}) : super(key: key);
@@ -122,7 +123,7 @@ class CategoryView extends StatelessWidget {
                               ),
                               child: Row(
                                 children: <Widget>[
-                                  const SizedBox(width: 48 + 24.0,),
+                                  // const SizedBox(width: 0,),
                                   Expanded(
                                     child: Container(
                                       child: Column(
@@ -183,14 +184,3 @@ class CategoryView extends StatelessWidget {
   }
 }
 
-class HexColor extends Color {
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
-
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll('#', '');
-    if (hexColor.length == 6) {
-      hexColor = 'FF' + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
-  }
-}
