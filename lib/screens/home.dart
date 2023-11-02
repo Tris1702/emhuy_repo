@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vietcard/screens/home/category_list_view.dart';
+import 'package:vietcard/screens/home/model/category.dart';
 
 class HomePage extends StatefulWidget {
   static const title = 'Home';
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
@@ -88,9 +90,66 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   Widget getStudyingFlashcardUI() {
-    return Text("Studying");
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0, left: 18, right: 16),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  'Recently',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Text(
+                    'See all >',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                        height: 1.5,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                        letterSpacing: 0.3,
+                        color: Color(0xFF3A5160),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        CategoryListView(
+          callBack: () {
+            moveTo();
+          },
+        ),
+      ]
+
+    );
   }
+
+  void moveTo() {
+    // Navigator.push<dynamic>(
+    //   context,
+    //   MaterialPageRoute<dynamic>(
+    //     builder: (BuildContext context) => CategoryView(),
+    //   ),
+    // );
+  }
+
   Widget getNewFlashcardUI() {
     return Text("New");
   }
