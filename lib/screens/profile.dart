@@ -289,7 +289,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Container(
                       child: Text(
-                        'Projects',
+                        'Favorite',
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.blueGrey,
