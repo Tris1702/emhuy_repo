@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         //User name
                         Container(
                           child: Text(
-                            'Nguyen Van A',
+                            'Nguyen Van B',
                             style: TextStyle(
                                 color: Colors.grey[800],
                                 fontSize: 25,
