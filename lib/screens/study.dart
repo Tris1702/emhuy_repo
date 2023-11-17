@@ -5,6 +5,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/teenyicons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:vietcard/screens/game.dart';
 
 class Question {
   final String question;
@@ -23,12 +24,13 @@ class Question {
 }
 
 class StudyScreen extends StatefulWidget {
-  final List<Question> questions;
+  List<Question> questions;
   int blueCard = 0;
   int redCard = 0;
   int greenCard = 0;
   int xpEarned = 0;
   int totalCards = 0;
+  int currentCardType = 0;
   StudyScreen({required this.questions}) {
     for (int i = 0; i < questions.length; ++i) {
       if (questions[i].cardType == 0) {
@@ -39,6 +41,7 @@ class StudyScreen extends StatefulWidget {
         greenCard++;
       }
     }
+    currentCardType = questions[0].cardType;
     totalCards = blueCard * 2 + redCard + greenCard;
   }
   @override
@@ -49,11 +52,46 @@ class _StudyScreenState extends State<StudyScreen> {
   final Duration duration = const Duration(seconds: 1);
   PageController _pageController = PageController(initialPage: 0);
   int currentQuestionIndex = 0;
-  void increaseProgress() {
+  void _increaseProgress(bool isCorrect) {
+    int cardType = widget.questions[currentQuestionIndex].cardType;
     setState(() {
-      widget.blueCard--;
-      widget.xpEarned += 10;
+      if (cardType == 0) {
+        widget.blueCard--;
+      } else if (cardType == 1) {
+        widget.redCard--;
+      } else {
+        widget.greenCard--;
+      }
+      if (!isCorrect || cardType == 0) {
+        widget.redCard++;
+        Question q = widget.questions[currentQuestionIndex];
+        q.cardType = 1;
+        widget.questions.add(q);
+      }
+      if (isCorrect) {
+        widget.xpEarned += 10;
+      }
+      widget.currentCardType = (currentQuestionIndex < widget.questions.length - 1
+          ? widget.questions[currentQuestionIndex + 1].cardType
+          : 3);
     });
+  }
+
+  void _navigateToNextQuestion(bool isCorrect) {
+    if (currentQuestionIndex < widget.questions.length - 1) {
+      currentQuestionIndex++;
+      _pageController.animateToPage(
+        currentQuestionIndex,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      // Navigate to the summary page and replace the current route
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => GamePage()),
+      );
+    }
   }
 
   @override
@@ -64,20 +102,19 @@ class _StudyScreenState extends State<StudyScreen> {
           child: Column(
             children: [
               StudyAppBar(
-                blueCard: widget.blueCard,
-                redCard: widget.redCard,
-                greenCard: widget.greenCard,
-                totalCards: widget.totalCards,
-                xpEarned: widget.xpEarned,
-                increaseProgress: increaseProgress,
-              ),
+                  blueCard: widget.blueCard,
+                  redCard: widget.redCard,
+                  greenCard: widget.greenCard,
+                  totalCards: widget.totalCards,
+                  xpEarned: widget.xpEarned,
+                  currentCardType: widget.currentCardType),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
+                  physics: NeverScrollableScrollPhysics(),
                   itemCount: widget.questions.length,
                   itemBuilder: (context, index) {
                     return SlidingUpPanel(
-                        parallaxEnabled: true,
                         minHeight: 85,
                         maxHeight: 490,
                         borderRadius: const BorderRadius.only(
@@ -85,7 +122,11 @@ class _StudyScreenState extends State<StudyScreen> {
                           topRight: Radius.circular(24.0),
                         ),
                         panel: AnswersExpandedPanel(
-                            answers: widget.questions[index].answers),
+                            answers: widget.questions[index].answers,
+                            correctAnswer:
+                                widget.questions[index].correctAnswer,
+                            navigateToNextQuestion: _navigateToNextQuestion,
+                            increaseProgress: _increaseProgress),
                         collapsed: Container(
                           decoration: const BoxDecoration(
                               color: Colors.white,
@@ -121,9 +162,16 @@ class _StudyScreenState extends State<StudyScreen> {
                             ],
                           ),
                         ),
-                        body: Center(
-                          child: Text(
-                              "This is the Widget behind the sliding panel"),
+                        body: ListView(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(18.0),
+                              child: Text(
+                                widget.questions[currentQuestionIndex].question,
+                                style: TextStyle(fontSize: 20.0),
+                              ),
+                            ),
+                          ],
                         ));
                   },
                 ),
@@ -137,21 +185,20 @@ class _StudyScreenState extends State<StudyScreen> {
 }
 
 class StudyAppBar extends StatelessWidget {
-  int blueCard;
-  int redCard;
-  int greenCard;
-  int totalCards;
-  int xpEarned;
-  final VoidCallback increaseProgress;
+  final int blueCard;
+  final int redCard;
+  final int greenCard;
+  final int totalCards;
+  final int xpEarned;
+  final int currentCardType;
 
-  StudyAppBar({
-    required this.blueCard,
-    required this.redCard,
-    required this.greenCard,
-    required this.totalCards,
-    required this.increaseProgress,
-    required this.xpEarned,
-  });
+  StudyAppBar(
+      {required this.blueCard,
+      required this.redCard,
+      required this.greenCard,
+      required this.totalCards,
+      required this.xpEarned,
+      required this.currentCardType});
 
   @override
   Widget build(BuildContext context) {
@@ -197,10 +244,16 @@ class StudyAppBar extends StatelessWidget {
                               Shadow(color: Colors.blue, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.blue,
-                            decorationThickness: 2,
-                            decorationStyle: TextDecorationStyle.solid,
+                            decoration: (currentCardType == 0
+                                ? TextDecoration.underline
+                                : null),
+                            decorationColor:
+                                (currentCardType == 0 ? Colors.blue : null),
+                            decorationThickness:
+                                (currentCardType == 0 ? 2 : null),
+                            decorationStyle: (currentCardType == 0
+                                ? TextDecorationStyle.solid
+                                : null),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -213,6 +266,16 @@ class StudyAppBar extends StatelessWidget {
                               Shadow(color: Colors.red, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
+                            decoration: (currentCardType == 1
+                                ? TextDecoration.underline
+                                : null),
+                            decorationColor:
+                                (currentCardType == 1 ? Colors.red : null),
+                            decorationThickness:
+                                (currentCardType == 1 ? 2 : null),
+                            decorationStyle: (currentCardType == 1
+                                ? TextDecorationStyle.solid
+                                : null),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -225,6 +288,16 @@ class StudyAppBar extends StatelessWidget {
                               Shadow(color: Colors.green, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
+                            decoration: (currentCardType == 2
+                                ? TextDecoration.underline
+                                : null),
+                            decorationColor:
+                                (currentCardType == 2 ? Colors.green : null),
+                            decorationThickness:
+                                (currentCardType == 2 ? 2 : null),
+                            decorationStyle: (currentCardType == 2
+                                ? TextDecorationStyle.solid
+                                : null),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -381,8 +454,14 @@ class PanelHeaderRectangle extends StatelessWidget {
 
 class AnswersExpandedPanel extends StatefulWidget {
   final List<String> answers;
-
-  AnswersExpandedPanel({required this.answers});
+  final String correctAnswer;
+  final Function(bool) navigateToNextQuestion;
+  final Function(bool) increaseProgress;
+  AnswersExpandedPanel(
+      {required this.answers,
+      required this.correctAnswer,
+      required this.navigateToNextQuestion,
+      required this.increaseProgress});
 
   List<bool> selectedAnswers = List.filled(4, false);
 
@@ -391,7 +470,8 @@ class AnswersExpandedPanel extends StatefulWidget {
 }
 
 class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
-  bool isCorrectVisible = false;
+  bool isCheckAnswerButtonClicked = false;
+  int isCorrect = -1;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -414,36 +494,66 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
+                          if (isCheckAnswerButtonClicked) {
+                            return;
+                          }
                           // Toggle the selected state of the answer when tapped
                           setState(() {
+                            for (int i = 0; i < 4; ++i) {
+                              if (i != index) {
+                                widget.selectedAnswers[i] = false;
+                              }
+                            }
                             widget.selectedAnswers[index] =
                                 !widget.selectedAnswers[index];
+                            if (widget.selectedAnswers[index]) {
+                              isCorrect =
+                                  (widget.answers[index] == widget.correctAnswer
+                                      ? 1
+                                      : 0);
+                            } else {
+                              isCorrect = -1;
+                            }
                           });
                         },
                         child: Container(
                           padding: EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              begin:
-                                  Alignment.bottomCenter, // Start from the bottom
+                              begin: Alignment
+                                  .bottomCenter, // Start from the bottom
                               end: Alignment.topCenter, // End at the top
                               stops: [0.04, 0.04], // Adjust the stops as needed
                               colors: [
                                 widget.selectedAnswers[index]
-                                    ? Color(0xff74CCF2)
+                                    ? (isCheckAnswerButtonClicked
+                                        ? (widget.answers[index] ==
+                                                widget.correctAnswer
+                                            ? Color(0xff85f274)
+                                            : Color(0xfff27474))
+                                        : Color(0xff74CCF2))
                                     : Color(0xffC7C6C6),
-                                Colors.white
+                                widget.selectedAnswers[index]
+                                    ? (isCheckAnswerButtonClicked
+                                        ? (widget.answers[index] ==
+                                                widget.correctAnswer
+                                            ? Color(0xffdefcd9)
+                                            : Color(0xfffcd9d9))
+                                        : Color(0xffd9f6fc))
+                                    : Colors.white
                               ],
                             ),
                             border: Border.all(
                               color: widget.selectedAnswers[index]
-                                  ? Color(0xff74CCF2)
+                                  ? (isCheckAnswerButtonClicked
+                                      ? (widget.answers[index] ==
+                                              widget.correctAnswer
+                                          ? Color(0xff85f274)
+                                          : Color(0xfff27474))
+                                      : Color(0xff74CCF2))
                                   : Color(0xffC7C6C6),
                               width: 3.0,
                             ),
-                            color: widget.selectedAnswers[index]
-                                ? Color(0xff74CCF2)
-                                : Colors.white, // Inner color
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Center(
@@ -458,35 +568,47 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                 ),
               ),
               Positioned(
-                  bottom: isCorrectVisible ? 0 : -130,
-                  left: 0,
-                  right: 0,
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 180), // Adjust the animation duration
-                    height: isCorrectVisible ? 130 : 0,
-                    color: Color(0xffd6fcb8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Row(
-                          children: [
-                            Iconify(Teenyicons.tick_circle_solid, color: Color(0xff3a8c40), size: 20,),
-                            SizedBox(width: 10),
-                            Text(
-                              'Chính xác!',
-                              style: TextStyle(
-                                color: Color(0xff3a8c40),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 20,
-                              ),
+                bottom: isCheckAnswerButtonClicked ? 0 : -130,
+                left: 0,
+                right: 0,
+                child: AnimatedContainer(
+                  duration: Duration(
+                      milliseconds: 180), // Adjust the animation duration
+                  height: isCheckAnswerButtonClicked ? 130 : 0,
+                  color:
+                      (isCorrect == 1 ? Color(0xffd6fcb8) : Color(0xfffcb8b8)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Row(
+                        children: [
+                          Iconify(
+                            Teenyicons.tick_circle_solid,
+                            color: (isCorrect == 1
+                                ? Color(0xff3a8c40)
+                                : Color(0xffc43535)),
+                            size: 20,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            (isCorrect == 1
+                                ? 'Chính xác!'
+                                : 'Không chính xác!'),
+                            style: TextStyle(
+                              color: (isCorrect == 1
+                                  ? Color(0xff3a8c40)
+                                  : Color(0xffc43535)),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 20,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
+              ),
               Positioned(
                 bottom: 17,
                 left: 16,
@@ -494,29 +616,56 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                   height: 55,
                   child: GestureDetector(
                       onTap: () {
+                        if (isCorrect == -1) {
+                          return;
+                        }
                         setState(() {
-                          print("Button Clicked");
-                          isCorrectVisible = true;
+                          if (isCheckAnswerButtonClicked) {
+                            widget.navigateToNextQuestion(isCorrect == 1);
+                            return;
+                          }
+                          widget.increaseProgress(isCorrect == 1);
+                          isCheckAnswerButtonClicked = true;
                         });
                       },
                       child: Container(
                         width: 360,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            begin: Alignment.bottomCenter, // Start from the bottom
+                            begin:
+                                Alignment.bottomCenter, // Start from the bottom
                             end: Alignment.topCenter, // End at the top
                             stops: [0.1, 0.1], // Adjust the stops as needed
-                            colors: [Color(0xff3a8c40), Color(0xff75E840)],
+                            colors: [
+                              (isCorrect == -1
+                                  ? Color(0xffC7C6C6)
+                                  : ((!isCheckAnswerButtonClicked ||
+                                          isCorrect == 1)
+                                      ? Color(0xff3a8c40)
+                                      : Color(0xffc43535))),
+                              (isCorrect == -1
+                                  ? Color(0xfff0f2f0)
+                                  : ((!isCheckAnswerButtonClicked ||
+                                          isCorrect == 1)
+                                      ? Color(0xff75E840)
+                                      : Color(0xffe84040)))
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Center(
                           child: Text(
-                            'KIỂM TRA',
+                            (isCheckAnswerButtonClicked
+                                ? 'TIẾP TỤC'
+                                : 'KIỂM TRA'),
                             style: TextStyle(
-                              color: Color(0xff3a8c40),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              color: (isCorrect == -1
+                                  ? Color(0xffC7C6C6)
+                                  : (isCorrect == 1
+                                      ? Color(0xfffcfafa)
+                                      : Color(0xfff7f7f7))),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 23,
                             ),
                           ),
                         ),
