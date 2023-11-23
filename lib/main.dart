@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ri.dart';
@@ -13,10 +17,41 @@ import 'package:vietcard/screens/search.dart';
 import 'custom_widgets/custom_physics.dart';
 import 'custom_widgets/snackbar.dart';
 
-void main() {
-  initLogging();
+Future<void> main() async {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await Hive.initFlutter('Mystic');
+  } else {
+    await Hive.initFlutter();
+  }
+  await openHiveBox('settings');
+  await openHiveBox('cache', limit: true);
+
+  await initLogging();
   runApp(MyApp());
 }
+
+Future<void> openHiveBox(String boxName, {bool limit = false}) async {
+  final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
+    Logger.root.severe('Failed to open $boxName Box', error, stackTrace);
+    final Directory dir = await getApplicationDocumentsDirectory();
+    final String dirPath = dir.path;
+    File dbFile = File('$dirPath/$boxName.hive');
+    File lockFile = File('$dirPath/$boxName.lock');
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      dbFile = File('$dirPath/Mystic/$boxName.hive');
+      lockFile = File('$dirPath/Mystic/$boxName.lock');
+    }
+    await dbFile.delete();
+    await lockFile.delete();
+    await Hive.openBox(boxName);
+    throw 'Failed to open $boxName Box\nError: $error';
+  });
+  // clear box if it grows large
+  if (limit && box.length > 500) {
+    box.clear();
+  }
+}
+
 
 class MyApp extends StatefulWidget {
   static final title = 'VietCard';
@@ -31,7 +66,6 @@ class _MyAppState extends State<MyApp> {
   DateTime? backButtonPressTime;
 
   void _onItemTapped(int index) {
-    Logger.root.info("TEST INFO");
     _selectedIndex.value = index;
     _pageController.jumpToPage(
       index,
