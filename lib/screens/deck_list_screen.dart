@@ -51,7 +51,7 @@ class DeckListScreen extends StatelessWidget {
                 itemCount: decksList.length,
                 itemBuilder: (context, index) {
                   DeckWithReviewCards item = decksList[index];
-                  if (item.deck.isGlobal) {
+                  if (item.deck.isPublic) {
                     return PublicDeckTile(
                       item: item,
                     );

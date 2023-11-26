@@ -17,9 +17,10 @@ List<DeckWithReviewCards> mockDecksList = [
   DeckWithReviewCards(
     deck: Deck(
         id: '1',
-        isGlobal: false,
+        isPublic: false,
         name: 'Hoàng thành Thăng Long',
-        description: 'Bộ thẻ nói về Hoàng thành Thăng Long nằm ở Hoàng Diệu, Điện Biên, Ba Đình, Hà Nội',
+        description:
+        'Bộ thẻ về Hoàng thành Thăng Long nằm ở Hoàng Diệu, Điện Biên, Ba Đình, Hà Nội',
         createdAt: DateTime.now(),
         userId: 'user1',
         descriptionImgPath:
@@ -38,7 +39,7 @@ List<DeckWithReviewCards> mockDecksList = [
   DeckWithReviewCards(
     deck: Deck(
         id: '2',
-        isGlobal: true,
+        isPublic: true,
         name: 'Chùa với tên siêu dài chẳng hạn siêu siêu dài dài và siêu dài',
         description: 'Description for Global Deck',
         createdAt: DateTime.now(),
@@ -59,7 +60,7 @@ List<DeckWithReviewCards> mockDecksList = [
   DeckWithReviewCards(
     deck: Deck(
         id: '3',
-        isGlobal: false,
+        isPublic: false,
         name: 'Deck 3',
         description: 'Description for Deck 3',
         createdAt: DateTime.now(),
@@ -78,7 +79,7 @@ List<DeckWithReviewCards> mockDecksList = [
   DeckWithReviewCards(
     deck: Deck(
         id: '4',
-        isGlobal: true,
+        isPublic: true,
         name: 'Global Deck 2',
         description: 'Description for Global Deck 2',
         createdAt: DateTime.now(),
@@ -97,7 +98,7 @@ List<DeckWithReviewCards> mockDecksList = [
   DeckWithReviewCards(
     deck: Deck(
         id: '5',
-        isGlobal: false,
+        isPublic: false,
         name: 'Deck 5',
         description: 'Description for Deck 5',
         createdAt: DateTime.now(),

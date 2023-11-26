@@ -125,7 +125,7 @@ class DeckSearch extends SearchDelegate {
           suggestionList[index].deck.name,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: suggestionList[index].deck.isGlobal ? Row(
+        subtitle: suggestionList[index].deck.isPublic ? Row(
           children: [
             Text(
               "Đánh giá: ",
@@ -248,7 +248,7 @@ class DeckSearch extends SearchDelegate {
             itemCount: suggestionList.length,
             itemBuilder: (context, index) {
               DeckWithReviewCards item = suggestionList[index];
-              if (item.deck.isGlobal) {
+              if (item.deck.isPublic) {
                 return PublicDeckTile(
                   item: item,
                 );
