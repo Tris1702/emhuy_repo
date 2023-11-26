@@ -16,6 +16,8 @@ class Deck {
   String descriptionImgPath;
   int totalCards;
   int totalNewCards;
+  int views;
+  double rating;
 
   Deck({
     required this.id,
@@ -31,7 +33,9 @@ class Deck {
     this.curReviewCards = 0,
     this.descriptionImgPath = "",
     required this.totalCards,
-    required this.totalNewCards
+    required this.totalNewCards,
+    this.views = 0,
+    required this.rating
   }) : lastReview = ( lastReview_ ?? DateTime.now() );
 }
 

@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isHeartIconClicked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,8 +58,8 @@ class _HomePageState extends State<HomePage> {
                 "Chào mừng,",
                 textAlign: TextAlign.left,
                 style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 21,
                   color: Color(0xFF3A5160), //grey
                 ),
               ),
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 20,
+                  fontSize: 25,
                   color: Color(0xFF17262A), //darker
                 ),
               ),
@@ -76,10 +77,17 @@ class _HomePageState extends State<HomePage> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Iconify(
-            Ri.heart_2_fill,
-            color: Color(0xffe30e51), // Change color as needed
-            size: 30,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                isHeartIconClicked ^= true;
+              });
+            },
+            child: Iconify(
+              isHeartIconClicked ? Ri.heart_2_fill : Ri.heart_2_line,
+              color: Color(0xffe30e51), // Change color as needed
+              size: 30,
+            ),
           ),
         ),
         Padding(
@@ -108,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 24,
+                    fontSize: 23,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -146,6 +154,8 @@ class _HomePageState extends State<HomePage> {
           ),
           DeckHorizontalList(
             itemCountPerGroup: 3,
+            deckType: 0,
+            decksList: mockDecksList,
           )
         ]);
   }
@@ -164,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 24,
+                    fontSize: 23,
                     letterSpacing: 0.4,
                   ),
                 ),
@@ -202,6 +212,8 @@ class _HomePageState extends State<HomePage> {
           ),
           DeckHorizontalList(
             itemCountPerGroup: 2,
+            deckType: 1,
+            decksList: mockDecksList,
           )
         ]);
   }
