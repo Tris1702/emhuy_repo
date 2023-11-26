@@ -4,6 +4,9 @@ import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 import 'package:vietcard/screens/home/widgets/deck_horizontal_list.dart';
+import 'package:iconify_flutter/icons/carbon.dart';
+import 'package:iconify_flutter/icons/ri.dart';
+
 class HomePage extends StatefulWidget {
   static const title = 'Home';
 
@@ -21,10 +24,12 @@ class _HomePageState extends State<HomePage> {
         //Transparent
         backgroundColor: Color(0x00000000),
         body: Column(
-          children: <Widget> [
+          children: <Widget>[
             getAppBarHome(),
             getUserDeckWidget(),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             getPublicDeckWidget()
           ],
         ),
@@ -43,7 +48,7 @@ class _HomePageState extends State<HomePage> {
             child: Image.asset('assets/user_placeholder.png'),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +73,23 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: Iconify(
+            Ri.heart_2_fill,
+            color: Color(0xffe30e51), // Change color as needed
+            size: 30,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Iconify(
+            Carbon.notification_filled,
+            color: Color(0xffe8e01a), // Change color as needed
+            size: 30,
+          ),
+        ),
       ],
     );
   }
@@ -91,8 +112,14 @@ class _HomePageState extends State<HomePage> {
                     letterSpacing: 0.4,
                   ),
                 ),
-                SizedBox(width: 10,),
-                Iconify(Mdi.cards_playing_club_multiple, color: Colors.orange, size: 20,),
+                SizedBox(
+                  width: 10,
+                ),
+                Iconify(
+                  Mdi.cards_playing_club_multiple,
+                  color: Colors.orange,
+                  size: 20,
+                ),
                 Expanded(
                   child: Text(
                     'XEM TẤT CẢ',
@@ -117,9 +144,10 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          DeckHorizontalList(itemCountPerGroup: 3,)
-        ]
-    );
+          DeckHorizontalList(
+            itemCountPerGroup: 3,
+          )
+        ]);
   }
 
   Widget getPublicDeckWidget() {
@@ -140,8 +168,14 @@ class _HomePageState extends State<HomePage> {
                     letterSpacing: 0.4,
                   ),
                 ),
-                SizedBox(width: 10,),
-                Iconify(Ri.global_fill, color: Colors.orange, size: 20,),
+                SizedBox(
+                  width: 10,
+                ),
+                Iconify(
+                  Ri.global_fill,
+                  color: Colors.orange,
+                  size: 20,
+                ),
                 Expanded(
                   child: Text(
                     'XEM TẤT CẢ',
@@ -166,8 +200,9 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          DeckHorizontalList(itemCountPerGroup: 2,)
-        ]
-    );
+          DeckHorizontalList(
+            itemCountPerGroup: 2,
+          )
+        ]);
   }
 }
