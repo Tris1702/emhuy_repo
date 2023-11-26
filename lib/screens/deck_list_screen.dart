@@ -7,10 +7,10 @@ import 'package:vietcard/custom_widgets/deck_search.dart';
 import '../custom_widgets/deck_list_tile.dart';
 import '../entity/deck.dart';
 
-class DeckScreen extends StatelessWidget {
+class DeckListScreen extends StatelessWidget {
   final List<DeckWithReviewCards> decksList;
 
-  DeckScreen({required this.decksList});
+  DeckListScreen({required this.decksList});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

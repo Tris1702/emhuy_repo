@@ -10,6 +10,7 @@ import 'package:vietcard/helpers/string.dart';
 
 import '../entity/deck.dart';
 import '../helpers/validate.dart';
+import '../screens/deck_screen.dart';
 import 'deck_list_info_bar.dart';
 
 class DeckSearch extends SearchDelegate {
@@ -24,8 +25,6 @@ class DeckSearch extends SearchDelegate {
         IconButton(
           icon: const Iconify(Ri.search_eye_line),
           tooltip: "Tìm kiêm",
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
           onPressed: () {},
         )
       else
@@ -34,8 +33,6 @@ class DeckSearch extends SearchDelegate {
             query = '';
           },
           tooltip: "Xóa",
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(),
           icon: const Icon(
             Icons.clear_rounded,
           ),
@@ -48,8 +45,6 @@ class DeckSearch extends SearchDelegate {
     return IconButton(
       icon: const Icon(Icons.arrow_back_rounded),
       tooltip: "Quay lại",
-      padding: EdgeInsets.zero,
-      constraints: BoxConstraints(),
       onPressed: () {
         close(context, null);
       },
@@ -183,7 +178,12 @@ class DeckSearch extends SearchDelegate {
           deckItem: suggestionList[index],
         ),
         onTap: () {
-          // TODO: You're gonna do this soon :))
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DeckScreen(deckData: suggestionList[index]),
+            ),
+          );
         },
       ),
     );

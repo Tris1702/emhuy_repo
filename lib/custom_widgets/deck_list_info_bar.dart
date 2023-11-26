@@ -41,20 +41,14 @@ class DeckListInfoBar extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.book),
                 onPressed: onStudyAllPressed,
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
               ),
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: onAddPressed,
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
               ),
               IconButton(
                 icon: Icon(Icons.filter_list),
                 onPressed: onFilterPressed,
-                padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
               ),
             ],
           ),

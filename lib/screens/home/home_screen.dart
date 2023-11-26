@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DeckScreen(decksList: mockDecksList,)),
+                      MaterialPageRoute(builder: (context) => DeckListScreen(decksList: mockDecksList,)),
                     );
                   },
                   child: Row(
@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DeckScreen(decksList: mockDecksList,)),
+                      MaterialPageRoute(builder: (context) => DeckListScreen(decksList: mockDecksList,)),
                     );
                   },
                   child: Row(

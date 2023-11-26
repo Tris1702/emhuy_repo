@@ -10,6 +10,7 @@ import '../../../custom_widgets/animated_progress_bar.dart';
 import '../../../custom_widgets/animated_text.dart';
 import '../../../custom_widgets/custom_physics.dart';
 import '../../../entity/deck.dart';
+import '../../deck_screen.dart';
 
 List<DeckWithReviewCards> mockDecksList = [
   // Mock DeckWithReviewCards 1
@@ -18,7 +19,7 @@ List<DeckWithReviewCards> mockDecksList = [
         id: '1',
         isGlobal: false,
         name: 'Hoàng thành Thăng Long',
-        description: 'Description for Deck 1',
+        description: 'Bộ thẻ nói về Hoàng thành Thăng Long nằm ở Hoàng Diệu, Điện Biên, Ba Đình, Hà Nội',
         createdAt: DateTime.now(),
         userId: 'user1',
         descriptionImgPath:
@@ -38,7 +39,7 @@ List<DeckWithReviewCards> mockDecksList = [
     deck: Deck(
         id: '2',
         isGlobal: true,
-        name: 'Chùa với tên siêu dài chẳng hạn',
+        name: 'Chùa với tên siêu dài chẳng hạn siêu siêu dài dài và siêu dài',
         description: 'Description for Global Deck',
         createdAt: DateTime.now(),
         userId: 'user2',
@@ -151,9 +152,9 @@ class DeckHorizontalList extends StatelessWidget {
                     if (itemIndex < decksList.length) {
                       final item = decksList[itemIndex];
                       if (deckType == 0) {
-                        return getUserDeckTile(item);
+                        return getUserDeckTile(item, context);
                       } else {
-                        return getPublicDeckTile(item);
+                        return getPublicDeckTile(item, context);
                       }
                     } else {
                       return const SizedBox(); // Return an empty widget if the index is out of bounds
@@ -169,9 +170,16 @@ class DeckHorizontalList extends StatelessWidget {
   }
 }
 
-Widget getUserDeckTile(DeckWithReviewCards item) {
+Widget getUserDeckTile(DeckWithReviewCards item, BuildContext context) {
   return GestureDetector(
-    onTap: () => {},
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DeckScreen(deckData: item),
+        ),
+      );
+    },
     child: Container(
       decoration: BoxDecoration(
         color: Colors.grey[100], // Add a slightly grey background color
@@ -273,9 +281,16 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
   );
 }
 
-Widget getPublicDeckTile(DeckWithReviewCards item) {
+Widget getPublicDeckTile(DeckWithReviewCards item, BuildContext context) {
   return GestureDetector(
-    onTap: () => {},
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DeckScreen(deckData: item),
+        ),
+      );
+    },
     child: Container(
       decoration: BoxDecoration(
         color: Colors.grey[100], // Add a slightly grey background color
