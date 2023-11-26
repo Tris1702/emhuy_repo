@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ion.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:vietcard/custom_widgets/three_card_type_number_row.dart';
+import 'package:vietcard/helpers/validate.dart';
 
 import '../../../custom_widgets/animated_progress_bar.dart';
 import '../../../custom_widgets/animated_text.dart';
@@ -190,7 +192,8 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
           child: SizedBox(
             width: 75,
             height: 75,
-            child: CachedNetworkImage(
+            child: validateURL(item.deck.descriptionImgPath)
+                ? CachedNetworkImage(
               fit: BoxFit.cover,
               errorWidget: (context, _, __) => const Image(
                 fit: BoxFit.cover,
@@ -201,6 +204,10 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
                 fit: BoxFit.cover,
                 image: AssetImage('assets/deck_placeholder.png'),
               ),
+            )
+                : const Image(
+              fit: BoxFit.cover,
+              image: AssetImage('assets/deck_placeholder.png'),
             ),
           ),
         ),
@@ -228,41 +235,10 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
                 defaultAlignment: TextAlign.start,
               ),
               const SizedBox(height: 4.0),
-              RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(children: [
-                    TextSpan(
-                      text: (item.numBlueCards).toStringAsFixed(0),
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900),
-                    ),
-                    WidgetSpan(
-                      child: SizedBox(
-                          width:
-                          6.0), // Adjust the width as needed for the space
-                    ),
-                    TextSpan(
-                      text: (item.numRedCards).toStringAsFixed(0),
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900),
-                    ),
-                    WidgetSpan(
-                      child: SizedBox(
-                          width:
-                          6.0), // Adjust the width as needed for the space
-                    ),
-                    TextSpan(
-                      text: (item.numGreenCards).toStringAsFixed(0),
-                      style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900),
-                    ),
-                  ])),
+              ThreeCardTypeNumbersRow(
+                  numBlueCards: item.numBlueCards,
+                  numRedCards: item.numRedCards,
+                  numGreenCards: item.numGreenCards),
               SizedBox(height: 4.0),
               Row(
                 children: [
@@ -320,17 +296,22 @@ Widget getPublicDeckTile(DeckWithReviewCards item) {
           child: SizedBox(
             width: 75,
             height: 75,
-            child: CachedNetworkImage(
+            child: validateURL(item.deck.descriptionImgPath)
+                ? CachedNetworkImage(
               fit: BoxFit.cover,
               errorWidget: (context, _, __) => const Image(
                 fit: BoxFit.cover,
                 image: AssetImage('assets/deck_placeholder.png'),
               ),
               imageUrl: item.deck.descriptionImgPath,
-              placeholder: (context, url) => Image(
+              placeholder: (context, url) => const Image(
                 fit: BoxFit.cover,
-                image: const AssetImage('assets/deck_placeholder.png'),
+                image: AssetImage('assets/deck_placeholder.png'),
               ),
+            )
+                : const Image(
+              fit: BoxFit.cover,
+              image: AssetImage('assets/deck_placeholder.png'),
             ),
           ),
         ),
@@ -376,7 +357,8 @@ Widget getPublicDeckTile(DeckWithReviewCards item) {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0, bottom: 2),
-                    child: Iconify(Mdi.cards_playing,
+                    child: Iconify(
+                      Mdi.cards_playing,
                       color: Colors.purple,
                       size: 20.0, // Adjust the size as needed
                     ),
@@ -417,7 +399,8 @@ Widget getPublicDeckTile(DeckWithReviewCards item) {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0, bottom: 2),
-                    child: Iconify(Ion.ios_eye,
+                    child: Iconify(
+                      Ion.ios_eye,
                       color: Colors.green,
                       size: 20.0, // Adjust the size as needed
                     ),

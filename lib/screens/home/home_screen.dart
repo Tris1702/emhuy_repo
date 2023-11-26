@@ -3,11 +3,12 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:iconify_flutter/icons/ri.dart';
+import 'package:vietcard/screens/deck_screen.dart';
 import 'package:vietcard/screens/home/widgets/deck_horizontal_list.dart';
 import 'package:iconify_flutter/icons/carbon.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 
-import 'notification_page.dart';
+import 'notification_screen.dart';
 
 class HomePage extends StatefulWidget {
   static const title = 'Home';
@@ -31,7 +32,7 @@ class _HomePageState extends State<HomePage> {
             getAppBarHome(),
             getUserDeckWidget(),
             SizedBox(
-              height: 10,
+              height: 15,
             ),
             getPublicDeckWidget()
           ],
@@ -44,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     return Row(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 20, top: 15),
           child: Container(
             width: 60,
             height: 60,
@@ -117,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 20, right: 5),
             child: Row(
               children: <Widget>[
@@ -138,25 +139,37 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.orange,
                   size: 20,
                 ),
-                Expanded(
-                  child: Text(
-                    'XEM TẤT CẢ',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      height: 1.5,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 15,
-                      letterSpacing: 0.3,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(bottom: 3.0),
-                  child: Iconify(
-                    Ic.outline_chevron_right,
-                    color: Colors.orange,
-                    size: 32,
+                SizedBox(width: 58,),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DeckScreen(decksList: mockDecksList,)),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'XEM TẤT CẢ',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          height: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                          letterSpacing: 0.3,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 3.0),
+                        child: Iconify(
+                          Ic.outline_chevron_right,
+                          color: Colors.orange,
+                          size: 32,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

@@ -18,6 +18,7 @@ class Deck {
   int totalNewCards;
   int views;
   double rating;
+  bool isFavorite;
 
   Deck({
     required this.id,
@@ -35,7 +36,8 @@ class Deck {
     required this.totalCards,
     required this.totalNewCards,
     this.views = 0,
-    required this.rating
+    required this.rating,
+    this.isFavorite = false,
   }) : lastReview = ( lastReview_ ?? DateTime.now() );
 }
 

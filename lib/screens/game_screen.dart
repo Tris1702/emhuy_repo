@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vietcard/entity/card.dart';
-import 'package:vietcard/screens/study.dart';
+import 'package:vietcard/screens/study_screen.dart';
 
 class GamePage extends StatefulWidget {
   static const title = 'Game';
