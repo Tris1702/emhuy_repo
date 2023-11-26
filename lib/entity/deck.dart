@@ -15,7 +15,7 @@ class Deck {
   int curReviewCards;
   String descriptionImgPath;
   int totalCards;
-  int totalNewCards;
+  int totalLearnedCards;
   int views;
   double rating;
   bool isFavorite;
@@ -34,7 +34,7 @@ class Deck {
     this.curReviewCards = 0,
     this.descriptionImgPath = "",
     required this.totalCards,
-    required this.totalNewCards,
+    required this.totalLearnedCards,
     this.views = 0,
     required this.rating,
     this.isFavorite = false,

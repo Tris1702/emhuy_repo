@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.orange,
                   size: 20,
                 ),
-                SizedBox(width: 58,),
+                const Expanded(child: SizedBox()),
                 InkWell(
                   onTap: () {
                     Navigator.push(
@@ -188,7 +188,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(left: 20, right: 5),
             child: Row(
               children: <Widget>[
@@ -209,25 +209,37 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.orange,
                   size: 20,
                 ),
-                Expanded(
-                  child: Text(
-                    'XEM TẤT CẢ',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      height: 1.5,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 15,
-                      letterSpacing: 0.3,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(bottom: 3.0),
-                  child: Iconify(
-                    Ic.outline_chevron_right,
-                    color: Colors.orange,
-                    size: 32,
+                const Expanded(child: SizedBox()),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DeckScreen(decksList: mockDecksList,)),
+                    );
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'XEM TẤT CẢ',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          height: 1.5,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                          letterSpacing: 0.3,
+                          color: Colors.orange,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 3.0),
+                        child: Iconify(
+                          Ic.outline_chevron_right,
+                          color: Colors.orange,
+                          size: 32,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

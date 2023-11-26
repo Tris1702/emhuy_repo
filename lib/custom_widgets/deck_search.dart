@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/ion.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 import 'package:vietcard/custom_widgets/deck_list_tile.dart';
 import 'package:vietcard/custom_widgets/love_button.dart';
@@ -22,6 +23,8 @@ class DeckSearch extends SearchDelegate {
         IconButton(
           icon: const Iconify(Ri.search_eye_line),
           tooltip: "Tìm kiêm",
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints(),
           onPressed: () {},
         )
       else
@@ -30,6 +33,8 @@ class DeckSearch extends SearchDelegate {
             query = '';
           },
           tooltip: "Xóa",
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints(),
           icon: const Icon(
             Icons.clear_rounded,
           ),
@@ -42,6 +47,8 @@ class DeckSearch extends SearchDelegate {
     return IconButton(
       icon: const Icon(Icons.arrow_back_rounded),
       tooltip: "Quay lại",
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints(),
       onPressed: () {
         close(context, null);
       },
@@ -50,26 +57,31 @@ class DeckSearch extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final List suggestionList;
+    final List<DeckWithReviewCards> suggestionList;
     if (query.isEmpty) {
       suggestionList = data;
     } else {
       List<String> queryWords =
       removeDiacritics(query.toLowerCase()).split(RegExp(r'\s+'));
 
-      List filteredData = [
+      List<DeckWithReviewCards> filteredData = [
         ...data.where((element) {
           String rawName = removeDiacritics(element.deck.name.toLowerCase());
-          String rawDes = removeDiacritics(element.deck.description.toLowerCase());
+          String rawDes =
+          removeDiacritics(element.deck.description.toLowerCase());
           return queryWords.any((queryWord) =>
           rawName.contains(queryWord) || rawDes.contains(queryWord));
         }),
       ];
       filteredData.sort((a, b) {
-        String rawNameA = removeDiacritics(a.deck.name.toString().toLowerCase());
-        String rawDesA = removeDiacritics(a.deck.description.toString().toLowerCase());
-        String rawNameB = removeDiacritics(b.deck.name.toString().toLowerCase());
-        String rawDesB = removeDiacritics(b.deck.description.toString().toLowerCase());
+        String rawNameA =
+        removeDiacritics(a.deck.name.toString().toLowerCase());
+        String rawDesA =
+        removeDiacritics(a.deck.description.toString().toLowerCase());
+        String rawNameB =
+        removeDiacritics(b.deck.name.toString().toLowerCase());
+        String rawDesB =
+        removeDiacritics(b.deck.description.toString().toLowerCase());
         int countMatchWordsA = countMatchWords(rawNameA, queryWords) +
             countMatchWords(rawDesA, queryWords);
         int countMatchWordsB = countMatchWords(rawNameB, queryWords) +
@@ -117,10 +129,55 @@ class DeckSearch extends SearchDelegate {
           suggestionList[index].deck.name,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: ThreeCardTypeNumbersRow(
-            numBlueCards: suggestionList[index].numBlueCards,
-            numRedCards: suggestionList[index].numRedCards,
-            numGreenCards: suggestionList[index].numGreenCards),
+        subtitle: suggestionList[index].deck.isGlobal ? Row(
+          children: [
+            Text(
+              "Đánh giá: ",
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Colors.black,
+              ),
+            ),
+            Text(
+              "${suggestionList[index].deck.rating.toStringAsFixed(1)}",
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0, bottom: 2),
+              child: Icon(
+                Icons.star,
+                color: Color(0xffedc202),
+                size: 18.0,
+              ),
+            ),
+            Text(
+              " ~ ${suggestionList[index].deck.views}",
+              style: TextStyle(
+                fontSize: 14.0,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0, bottom: 2),
+              child: Iconify(
+                Ion.ios_eye,
+                color: Colors.green,
+                size: 18.0,
+              ),
+            ),
+          ],
+        ) : ThreeCardTypeNumbersRow(
+          numBlueCards: suggestionList[index].numBlueCards,
+          numRedCards: suggestionList[index].numRedCards,
+          numGreenCards: suggestionList[index].numGreenCards,
+          fontSize: 14,
+          boxSize: 4,
+        ),
         trailing: LoveDeckButton(
           deckItem: suggestionList[index],
         ),
@@ -146,16 +203,21 @@ class DeckSearch extends SearchDelegate {
       List filteredData = [
         ...data.where((element) {
           String rawName = removeDiacritics(element.deck.name.toLowerCase());
-          String rawDes = removeDiacritics(element.deck.description.toLowerCase());
+          String rawDes =
+          removeDiacritics(element.deck.description.toLowerCase());
           return queryWords.any((queryWord) =>
           rawName.contains(queryWord) || rawDes.contains(queryWord));
         }),
       ];
       filteredData.sort((a, b) {
-        String rawNameA = removeDiacritics(a.deck.name.toString().toLowerCase());
-        String rawDesA = removeDiacritics(a.deck.description.toString().toLowerCase());
-        String rawNameB = removeDiacritics(b.deck.name.toString().toLowerCase());
-        String rawDesB = removeDiacritics(b.deck.description.toString().toLowerCase());
+        String rawNameA =
+        removeDiacritics(a.deck.name.toString().toLowerCase());
+        String rawDesA =
+        removeDiacritics(a.deck.description.toString().toLowerCase());
+        String rawNameB =
+        removeDiacritics(b.deck.name.toString().toLowerCase());
+        String rawDesB =
+        removeDiacritics(b.deck.description.toString().toLowerCase());
         int countMatchWordsA = countMatchWords(rawNameA, queryWords) +
             countMatchWords(rawDesA, queryWords);
         int countMatchWordsB = countMatchWords(rawNameB, queryWords) +
@@ -193,19 +255,22 @@ class DeckSearch extends SearchDelegate {
       hintColor: Colors.black54,
       primaryIconTheme: theme.primaryIconTheme.copyWith(color: Colors.black),
       textTheme: theme.textTheme.copyWith(
-        titleLarge:
-        const TextStyle(fontSize: 18, fontWeight: FontWeight.normal, color: Colors.black),
+        titleLarge: const TextStyle(
+            fontSize: 18, fontWeight: FontWeight.normal, color: Colors.black),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.grey[200], // Set the background color of the rounded box
+        fillColor:
+        Colors.grey[200], // Set the background color of the rounded box
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide.none, // Remove the border for focused state
-          borderRadius: BorderRadius.circular(50.0), // Set border radius for rounded corners
+          borderRadius: BorderRadius.circular(
+              50.0), // Set border radius for rounded corners
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide.none, // Remove the border for normal state
-          borderRadius: BorderRadius.circular(50.0), // Set border radius for rounded corners
+          borderRadius: BorderRadius.circular(
+              50.0), // Set border radius for rounded corners
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 18.0),
       ),

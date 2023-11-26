@@ -24,7 +24,7 @@ List<DeckWithReviewCards> mockDecksList = [
         descriptionImgPath:
         "https://static.vinwonders.com/production/hoang-thanh-thang-long-2.jpg",
         totalCards: 25,
-        totalNewCards: 14,
+        totalLearnedCards: 14,
         views: 1500,
         rating: 4.5235),
     numBlueCards: 10,
@@ -45,7 +45,7 @@ List<DeckWithReviewCards> mockDecksList = [
         descriptionImgPath:
         "https://ik.imagekit.io/tvlk/blog/2022/09/chua-mot-cot-1.jpg?tr=dpr-2,w-675",
         totalCards: 25,
-        totalNewCards: 3,
+        totalLearnedCards: 3,
         views: 450,
         rating: 4.0),
     numBlueCards: 4,
@@ -64,7 +64,7 @@ List<DeckWithReviewCards> mockDecksList = [
         createdAt: DateTime.now(),
         userId: 'user3',
         totalCards: 25,
-        totalNewCards: 22,
+        totalLearnedCards: 22,
         views: 150,
         rating: 4.9),
     numBlueCards: 2,
@@ -83,7 +83,7 @@ List<DeckWithReviewCards> mockDecksList = [
         createdAt: DateTime.now(),
         userId: 'user4',
         totalCards: 20,
-        totalNewCards: 18,
+        totalLearnedCards: 18,
         views: 10,
         rating: 1.3),
     numBlueCards: 30,
@@ -102,7 +102,7 @@ List<DeckWithReviewCards> mockDecksList = [
         createdAt: DateTime.now(),
         userId: 'user5',
         totalCards: 15,
-        totalNewCards: 1,
+        totalLearnedCards: 1,
         views: 88,
         rating: 0.5),
     numBlueCards: 3,
@@ -245,7 +245,7 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
                   AnimatedProgressBar(
                     width: 150, // Adjust the width as needed
                     height: 14, // Adjust the height as needed
-                    progress: item.deck.totalNewCards /
+                    progress: item.deck.totalLearnedCards /
                         item.deck
                             .totalCards, // Adjust the progress value as needed
                     backgroundColor: const Color(0xffD9D9D9),
@@ -257,7 +257,7 @@ Widget getUserDeckTile(DeckWithReviewCards item) {
                   SizedBox(width: 16.0),
 
                   Text(
-                    '${(item.deck.totalNewCards / item.deck.totalCards * 100).toStringAsFixed(0)}%', // Replace with actual calculation
+                    '${(item.deck.totalLearnedCards / item.deck.totalCards * 100).toStringAsFixed(0)}%', // Replace with actual calculation
                     style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.black,
