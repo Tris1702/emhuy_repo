@@ -7,6 +7,8 @@ import 'package:vietcard/screens/home/widgets/deck_horizontal_list.dart';
 import 'package:iconify_flutter/icons/carbon.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 
+import 'notification_page.dart';
+
 class HomePage extends StatefulWidget {
   static const title = 'Home';
 
@@ -90,12 +92,20 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Iconify(
-            Carbon.notification_filled,
-            color: Color(0xffe8e01a), // Change color as needed
-            size: 30,
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NotificationPage()),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Iconify(
+              Carbon.notification_filled,
+              color: Color(0xffe8e01a), // Change color as needed
+              size: 30,
+            ),
           ),
         ),
       ],
@@ -217,4 +227,7 @@ class _HomePageState extends State<HomePage> {
           )
         ]);
   }
+}
+
+class _NotificationPageRoute {
 }
