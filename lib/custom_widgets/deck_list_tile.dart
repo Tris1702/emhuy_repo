@@ -6,7 +6,6 @@ import 'package:iconify_flutter/icons/mdi.dart';
 import 'package:vietcard/custom_widgets/deck_popup_menu.dart';
 import 'package:vietcard/custom_widgets/love_button.dart';
 import 'package:vietcard/custom_widgets/three_card_type_number_row.dart';
-import 'package:iconify_flutter/icons/carbon.dart';
 import '../entity/deck.dart';
 import '../helpers/validate.dart';
 import 'animated_progress_bar.dart';
@@ -26,7 +25,7 @@ class UserDeckTile extends StatelessWidget {
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(30.0),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4),
+        margin: const EdgeInsets.only(left: 5.0, right: 5.0, bottom: 8),
         child: Row(
           children: [
             Expanded(
@@ -156,7 +155,7 @@ class PublicDeckTile extends StatelessWidget {
           color: Colors.grey[100],
           borderRadius: BorderRadius.circular(30.0),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4),
+        margin: const EdgeInsets.only(left: 5.0, right: 5.0, bottom: 8),
         child: Row(
           children: [
             Expanded(

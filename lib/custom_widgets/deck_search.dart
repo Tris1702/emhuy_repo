@@ -10,6 +10,7 @@ import 'package:vietcard/helpers/string.dart';
 
 import '../entity/deck.dart';
 import '../helpers/validate.dart';
+import 'deck_list_info_bar.dart';
 
 class DeckSearch extends SearchDelegate {
   final List<DeckWithReviewCards> data;
@@ -226,23 +227,39 @@ class DeckSearch extends SearchDelegate {
       });
       suggestionList = filteredData;
     }
-    return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(top: 10, bottom: 10),
-        shrinkWrap: true,
-        itemCount: suggestionList.length,
-        itemBuilder: (context, index) {
-          DeckWithReviewCards item = suggestionList[index];
-          if (item.deck.isGlobal) {
-            return PublicDeckTile(
-              item: item,
-            );
-          } else {
-            return UserDeckTile(
-              item: item,
-            );
-          }
-        });
+    return Column(
+      children: [
+        DeckListInfoBar(
+          numberOfDecks: suggestionList.length,
+          onAddPressed: () {
+            // Add button pressed
+          },
+          onFilterPressed: () {
+            // Filter button pressed
+          },
+          onStudyAllPressed: () {
+            // Study All button pressed
+          },
+        ),
+        ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            shrinkWrap: true,
+            itemCount: suggestionList.length,
+            itemBuilder: (context, index) {
+              DeckWithReviewCards item = suggestionList[index];
+              if (item.deck.isGlobal) {
+                return PublicDeckTile(
+                  item: item,
+                );
+              } else {
+                return UserDeckTile(
+                  item: item,
+                );
+              }
+            }),
+      ],
+    );
   }
 
   @override
