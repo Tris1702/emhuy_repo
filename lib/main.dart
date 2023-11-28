@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
@@ -12,7 +13,6 @@ import 'package:vietcard/screens/game_screen.dart';
 import 'package:vietcard/screens/home/home_screen.dart';
 import 'package:vietcard/screens/profile.dart';
 import 'package:vietcard/screens/search.dart';
-
 import 'custom_widgets/custom_physics.dart';
 import 'custom_widgets/snackbar.dart';
 
@@ -28,6 +28,7 @@ Future<void> main() async {
   await initLogging();
   runApp(MyApp());
 }
+
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
   final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
     Logger.root.severe('Failed to open $boxName Box', error, stackTrace);
@@ -51,34 +52,29 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
 }
 
 
-
 class MyApp extends StatefulWidget {
   static final title = 'VietCard';
 
   @override
   _MyAppState createState() => _MyAppState();
 }
-
 class _MyAppState extends State<MyApp> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
   DateTime? backButtonPressTime;
 
   void _onItemTapped(int index) {
-    Logger.root.info("TEST INFO");
     _selectedIndex.value = index;
     _pageController.jumpToPage(
       index,
     );
   }
-
   Future<void> handleWillPop(BuildContext context) async {
     final now = DateTime.now();
     final backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
         backButtonPressTime == null ||
             now.difference(backButtonPressTime!) >
                 const Duration(milliseconds: 2700);
-
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
       backButtonPressTime = now;
       ShowSnackBar().showSnackBar(
@@ -87,24 +83,20 @@ class _MyAppState extends State<MyApp> {
         duration: const Duration(milliseconds: 2500),
         noAction: true,
       );
-
       return;
     }
     SystemNavigator.pop();
     return;
   }
-
   @override
   void initState() {
     super.initState();
   }
-
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -171,7 +163,6 @@ class _MyAppState extends State<MyApp> {
                           title: Text("Home"),
                           selectedColor: Colors.purple,
                         ),
-
                         /// Search
                         SalomonBottomBarItem(
                           icon: const Iconify(
@@ -181,14 +172,12 @@ class _MyAppState extends State<MyApp> {
                           title: Text("Search"),
                           selectedColor: Colors.orange,
                         ),
-
                         /// Profile
                         SalomonBottomBarItem(
                           icon: Iconify(Ri.game_fill, color: Colors.green),
                           title: Text("Game"),
                           selectedColor: Colors.green,
                         ),
-
                         /// Profile
                         SalomonBottomBarItem(
                           icon: Iconify(Ri.user_5_fill, color: Colors.blue),
