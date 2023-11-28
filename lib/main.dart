@@ -13,6 +13,7 @@ import 'package:vietcard/screens/game_screen.dart';
 import 'package:vietcard/screens/home/home_screen.dart';
 import 'package:vietcard/screens/profile.dart';
 import 'package:vietcard/screens/search_screen.dart';
+import 'package:vietcard/screens/study_screen.dart';
 import 'custom_widgets/custom_physics.dart';
 import 'custom_widgets/snackbar.dart';
 
@@ -131,7 +132,7 @@ class _MyAppState extends State<MyApp> {
                             controller: _pageController,
                             children: [
                               HomePage(),
-                              SearchPage(allCards: [], query: "",),
+                              SearchPage(allCards: mockQuestions, query: "",),
                               GamePage(),
                               ProfilePage(),
                             ],
