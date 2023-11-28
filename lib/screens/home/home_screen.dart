@@ -7,7 +7,7 @@ import 'package:vietcard/screens/deck_list_screen.dart';
 import 'package:vietcard/screens/home/widgets/deck_horizontal_list.dart';
 import 'package:iconify_flutter/icons/carbon.dart';
 
-
+import '../../services/mock_data.dart';
 import 'notification_screen.dart';
 
 class HomePage extends StatefulWidget {
