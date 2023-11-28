@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
@@ -29,7 +28,6 @@ Future<void> main() async {
   await initLogging();
   runApp(MyApp());
 }
-
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
   final box = await Hive.openBox(boxName).onError((error, stackTrace) async {
     Logger.root.severe('Failed to open $boxName Box', error, stackTrace);
@@ -53,6 +51,7 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
 }
 
 
+
 class MyApp extends StatefulWidget {
   static final title = 'VietCard';
 
@@ -66,6 +65,7 @@ class _MyAppState extends State<MyApp> {
   DateTime? backButtonPressTime;
 
   void _onItemTapped(int index) {
+    Logger.root.info("TEST INFO");
     _selectedIndex.value = index;
     _pageController.jumpToPage(
       index,
