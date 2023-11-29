@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -11,74 +10,6 @@ import 'package:vietcard/entity/card.dart';
 
 import '../custom_widgets/animated_progress_bar.dart';
 import '../custom_widgets/long_button.dart';
-
-final mockQuestions = [
-  Flashcard(
-    id: "1",
-    deckId: "1",
-    question: "What is the capital of France?",
-    correctAnswer: "Paris",
-    answers: ["London", "Berlin", "Madrid", "Paris"],
-    createdAt: DateTime.now(),
-    userId: "user1",
-    lastReview: DateTime.now(),
-    nextReview: DateTime.now(),
-    numReviews: 0,
-    sm2N: 1,
-    sm2EF: 2.5,
-    sm2I: 3,
-    cardType: 0,
-  ),
-  Flashcard(
-    id: "2",
-    deckId: "1",
-    question: "What is the capital of France?1",
-    correctAnswer: "Paris1",
-    answers: ["London1", "Berlin1", "Madrid1", "Paris1"],
-    createdAt: DateTime.now(),
-    userId: "user1",
-    lastReview: DateTime.now(),
-    nextReview: DateTime.now(),
-    numReviews: 0,
-    sm2N: 1,
-    sm2EF: 2.5,
-    sm2I: 1,
-    cardType: 0,
-  ),
-  Flashcard(
-    id: "3",
-    deckId: "2",
-    question: "Which planet is known as the Red Planet?",
-    correctAnswer: "Mars",
-    answers: ["Earth", "Venus", "Jupiter", "Mars"],
-    createdAt: DateTime.now(),
-    userId: "user2",
-    lastReview: DateTime.now(),
-    nextReview: DateTime.now(),
-    numReviews: 0,
-    sm2N: 1,
-    sm2EF: 2.5,
-    sm2I: 3,
-    cardType: 1,
-  ),
-  Flashcard(
-    id: "4",
-    deckId: "2",
-    question: "What is the largest mammal in the world?",
-    correctAnswer: "Blue Whale",
-    answers: ["Lion", "Elephant", "Giraffe", "Blue Whale"],
-    createdAt: DateTime.now(),
-    userId: "user2",
-    lastReview: DateTime.now(),
-    nextReview: DateTime.now(),
-    numReviews: 0,
-    sm2N: 1,
-    sm2EF: 2.5,
-    sm2I: 3,
-    cardType: 2,
-  ),
-  // Add more mock questions as needed
-];
 
 //ignore: must_be_immutable
 class StudyScreen extends StatefulWidget {
