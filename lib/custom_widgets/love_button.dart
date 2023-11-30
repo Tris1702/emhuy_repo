@@ -3,7 +3,7 @@ import 'package:vietcard/custom_widgets/snackbar.dart';
 import 'package:vietcard/entity/deck.dart';
 
 class LoveDeckButton extends StatefulWidget {
-  final DeckWithReviewCards deckItem;
+  final DeckWithCards deckItem;
   final double? size;
   final bool showSnack;
   const LoveDeckButton({
