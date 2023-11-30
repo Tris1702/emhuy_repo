@@ -12,7 +12,7 @@ import 'package:iconify_flutter/icons/ri.dart';
 import 'package:vietcard/helpers/logging.dart';
 import 'package:vietcard/screens/game_screen.dart';
 import 'package:vietcard/screens/home/home_screen.dart';
-import 'package:vietcard/screens/profile.dart';
+import 'package:vietcard/screens/profile_screen.dart';
 import 'package:vietcard/screens/search_screen.dart';
 import 'package:vietcard/services/api_handler.dart';
 
@@ -151,7 +151,7 @@ class _MyAppState extends State<MyApp> {
                               SearchPage(
                                 query: "",
                               ),
-                              GamePage(),
+                              // GamePage(),
                               ProfilePage(),
                             ],
                           ),
@@ -194,11 +194,11 @@ class _MyAppState extends State<MyApp> {
                         ),
 
                         /// Profile
-                        SalomonBottomBarItem(
-                          icon: Iconify(Ri.game_fill, color: Colors.green),
-                          title: Text("Game"),
-                          selectedColor: Colors.green,
-                        ),
+                        // SalomonBottomBarItem(
+                        //   icon: Iconify(Ri.game_fill, color: Colors.green),
+                        //   title: Text("Game"),
+                        //   selectedColor: Colors.green,
+                        // ),
 
                         /// Profile
                         SalomonBottomBarItem(
