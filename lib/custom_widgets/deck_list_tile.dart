@@ -17,8 +17,8 @@ class UserDeckTile extends StatelessWidget {
 
   UserDeckTile(
       {required this.item,
-        required this.iconButtonBottomRight,
-        required this.iconButtonTopRight});
+      required this.iconButtonBottomRight,
+      required this.iconButtonTopRight});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class UserDeckTile extends StatelessWidget {
             Expanded(
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -57,26 +57,26 @@ class UserDeckTile extends StatelessWidget {
                       child: SizedBox(
                         width: 75,
                         height: 75,
-                        child: validateURL(item.deck.descriptionImgPath)
+                        child: validateURL(item.deck.descriptionImgURL)
                             ? CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          errorWidget: (context, _, __) => const Image(
-                            fit: BoxFit.cover,
-                            image:
-                            AssetImage('assets/deck_placeholder.png'),
-                          ),
-                          imageUrl: item.deck.descriptionImgPath,
-                          placeholder: (context, url) => const Image(
-                            fit: BoxFit.cover,
-                            image:
-                            AssetImage('assets/deck_placeholder.png'),
-                          ),
-                        )
+                                fit: BoxFit.cover,
+                                errorWidget: (context, _, __) => const Image(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      AssetImage('assets/deck_placeholder.png'),
+                                ),
+                                imageUrl: item.deck.descriptionImgURL,
+                                placeholder: (context, url) => const Image(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      AssetImage('assets/deck_placeholder.png'),
+                                ),
+                              )
                             : const Image(
-                          fit: BoxFit.cover,
-                          image:
-                          AssetImage('assets/deck_placeholder.png'),
-                        ),
+                                fit: BoxFit.cover,
+                                image:
+                                    AssetImage('assets/deck_placeholder.png'),
+                              ),
                       ),
                     ),
 
@@ -163,8 +163,8 @@ class PublicDeckTile extends StatelessWidget {
 
   PublicDeckTile(
       {required this.item,
-        required this.iconButtonBottomRight,
-        required this.iconButtonTopRight});
+      required this.iconButtonBottomRight,
+      required this.iconButtonTopRight});
 
   @override
   Widget build(BuildContext context) {
@@ -206,26 +206,26 @@ class PublicDeckTile extends StatelessWidget {
                       child: SizedBox(
                         width: 75,
                         height: 75,
-                        child: validateURL(item.deck.descriptionImgPath)
+                        child: validateURL(item.deck.descriptionImgURL)
                             ? CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          errorWidget: (context, _, __) => const Image(
-                            fit: BoxFit.cover,
-                            image:
-                            AssetImage('assets/deck_placeholder.png'),
-                          ),
-                          imageUrl: item.deck.descriptionImgPath,
-                          placeholder: (context, url) => const Image(
-                            fit: BoxFit.cover,
-                            image:
-                            AssetImage('assets/deck_placeholder.png'),
-                          ),
-                        )
+                                fit: BoxFit.cover,
+                                errorWidget: (context, _, __) => const Image(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      AssetImage('assets/deck_placeholder.png'),
+                                ),
+                                imageUrl: item.deck.descriptionImgURL,
+                                placeholder: (context, url) => const Image(
+                                  fit: BoxFit.cover,
+                                  image:
+                                      AssetImage('assets/deck_placeholder.png'),
+                                ),
+                              )
                             : const Image(
-                          fit: BoxFit.cover,
-                          image:
-                          AssetImage('assets/deck_placeholder.png'),
-                        ),
+                                fit: BoxFit.cover,
+                                image:
+                                    AssetImage('assets/deck_placeholder.png'),
+                              ),
                       ),
                     ),
 
@@ -270,7 +270,7 @@ class PublicDeckTile extends StatelessWidget {
                               ),
                               Padding(
                                 padding:
-                                const EdgeInsets.only(left: 6.0, bottom: 2),
+                                    const EdgeInsets.only(left: 6.0, bottom: 2),
                                 child: Iconify(
                                   Mdi.cards_playing,
                                   color: Colors.purple,
@@ -300,7 +300,7 @@ class PublicDeckTile extends StatelessWidget {
                               ),
                               Padding(
                                 padding:
-                                const EdgeInsets.only(left: 6.0, bottom: 2),
+                                    const EdgeInsets.only(left: 6.0, bottom: 2),
                                 child: Icon(
                                   Icons.star,
                                   color: Color(0xffedc202),
@@ -317,7 +317,7 @@ class PublicDeckTile extends StatelessWidget {
                               ),
                               Padding(
                                 padding:
-                                const EdgeInsets.only(left: 6.0, bottom: 2),
+                                    const EdgeInsets.only(left: 6.0, bottom: 2),
                                 child: Iconify(
                                   Ion.ios_eye,
                                   color: Colors.green,

@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -9,28 +11,27 @@ import 'package:path_provider/path_provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ri.dart';
+import 'package:vietcard/helpers/api.dart';
 import 'package:vietcard/helpers/logging.dart';
 import 'package:vietcard/screens/game_screen.dart';
 import 'package:vietcard/screens/home/home_screen.dart';
-import 'package:vietcard/screens/profile.dart';
+import 'package:vietcard/screens/login_screen.dart';
+import 'package:vietcard/screens/profile_screen.dart';
 import 'package:vietcard/screens/search_screen.dart';
-
 import 'package:vietcard/services/api_handler.dart';
 
 import 'custom_widgets/custom_physics.dart';
 import 'custom_widgets/snackbar.dart';
 
-
-
 Future<void> main() async {
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    await Hive.initFlutter('Mystic');
+    await Hive.initFlutter('VietCard');
   } else {
     await Hive.initFlutter();
   }
   await openHiveBox('settings');
   await openHiveBox('cache', limit: true);
-
+  await dotenv.load();
   await initAPIHandler();
   await initLogging();
   runApp(MyApp());
@@ -51,8 +52,8 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
     File dbFile = File('$dirPath/$boxName.hive');
     File lockFile = File('$dirPath/$boxName.lock');
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      dbFile = File('$dirPath/Mystic/$boxName.hive');
-      lockFile = File('$dirPath/Mystic/$boxName.lock');
+      dbFile = File('$dirPath/VietCard/$boxName.hive');
+      lockFile = File('$dirPath/VietCard/$boxName.lock');
     }
     await dbFile.delete();
     await lockFile.delete();
@@ -65,17 +66,40 @@ Future<void> openHiveBox(String boxName, {bool limit = false}) async {
   }
 }
 
-
 class MyApp extends StatefulWidget {
   static final title = 'VietCard';
 
   @override
   _MyAppState createState() => _MyAppState();
 }
+
 class _MyAppState extends State<MyApp> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
   DateTime? backButtonPressTime;
+  bool isLoggedIn = false;
+  final _storage = const FlutterSecureStorage();
+  void checkLogin() async {
+    String? refreshToken = await _storage.read(key: 'refresh_token');
+    if (refreshToken == null) {
+      isLoggedIn = false;
+      return;
+    } else {
+      APIHelper.refreshTokens(refreshToken).then((result) {
+        if (result['accessToken']!.isNotEmpty) {
+          // Token refresh successful, update your app's authentication state
+          // Access the new refresh token and access token as needed
+          String newRefreshToken = result['newRefreshToken']!;
+          String accessToken = result['accessToken']!;
+          isLoggedIn = true;
+        } else {
+          // Token refresh failed or unauthorized, handle accordingly
+          isLoggedIn = false;
+        }
+      });
+    }
+    isLoggedIn = false;
+  }
 
   void _onItemTapped(int index) {
     _selectedIndex.value = index;
@@ -83,12 +107,14 @@ class _MyAppState extends State<MyApp> {
       index,
     );
   }
+
   Future<void> handleWillPop(BuildContext context) async {
     final now = DateTime.now();
     final backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
         backButtonPressTime == null ||
             now.difference(backButtonPressTime!) >
                 const Duration(milliseconds: 2700);
+
     if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
       backButtonPressTime = now;
       ShowSnackBar().showSnackBar(
@@ -97,20 +123,31 @@ class _MyAppState extends State<MyApp> {
         duration: const Duration(milliseconds: 2500),
         noAction: true,
       );
+
       return;
     }
     SystemNavigator.pop();
     return;
   }
+
+  void _onSuccessLogIn() {
+    setState(() {
+      isLoggedIn = true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    checkLogin();
   }
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -120,7 +157,7 @@ class _MyAppState extends State<MyApp> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Builder(builder: (context) {
-        return Scaffold(
+        return isLoggedIn ? Scaffold(
           resizeToAvoidBottomInset: false,
           body: PopScope(
             canPop: false,
@@ -138,7 +175,7 @@ class _MyAppState extends State<MyApp> {
                       children: [
                         Expanded(
                           child: PageView(
-                            physics: const CustomPhysics(),
+                            physics: NeverScrollableScrollPhysics(),
                             onPageChanged: (index) {
                               _selectedIndex.value = index;
                             },
@@ -148,7 +185,7 @@ class _MyAppState extends State<MyApp> {
                               SearchPage(
                                 query: "",
                               ),
-                              GamePage(),
+                              // GamePage(),
                               ProfilePage(),
                             ],
                           ),
@@ -179,6 +216,7 @@ class _MyAppState extends State<MyApp> {
                           title: Text("Home"),
                           selectedColor: Colors.purple,
                         ),
+
                         /// Search
                         SalomonBottomBarItem(
                           icon: const Iconify(
@@ -188,12 +226,14 @@ class _MyAppState extends State<MyApp> {
                           title: Text("Search"),
                           selectedColor: Colors.orange,
                         ),
+
                         /// Profile
-                        SalomonBottomBarItem(
-                          icon: Iconify(Ri.game_fill, color: Colors.green),
-                          title: Text("Game"),
-                          selectedColor: Colors.green,
-                        ),
+                        // SalomonBottomBarItem(
+                        //   icon: Iconify(Ri.game_fill, color: Colors.green),
+                        //   title: Text("Game"),
+                        //   selectedColor: Colors.green,
+                        // ),
+
                         /// Profile
                         SalomonBottomBarItem(
                           icon: Iconify(Ri.user_5_fill, color: Colors.blue),
@@ -205,7 +245,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 }),
           ),
-        );
+        ) : LoginPage(onSuccessLogIn: _onSuccessLogIn);
       }),
     );
   }
