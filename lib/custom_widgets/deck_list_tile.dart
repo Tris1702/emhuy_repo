@@ -7,11 +7,12 @@ import 'package:vietcard/custom_widgets/three_card_type_number_row.dart';
 import '../entity/deck.dart';
 import '../helpers/validate.dart';
 import '../screens/deck_screen.dart';
+import '../services/theme_manager.dart';
 import 'animated_progress_bar.dart';
 import 'animated_text.dart';
 
 class UserDeckTile extends StatelessWidget {
-  final DeckWithReviewCards item;
+  final DeckWithCards item;
   final Widget iconButtonTopRight;
   final Widget iconButtonBottomRight;
 
@@ -22,6 +23,7 @@ class UserDeckTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MyColors myColors = Theme.of(context).extension<MyColors>()!;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -33,7 +35,7 @@ class UserDeckTile extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: myColors.deckTileBackground,
           borderRadius: BorderRadius.circular(30.0),
         ),
         margin: const EdgeInsets.only(left: 5.0, right: 5.0, bottom: 8),
@@ -109,28 +111,35 @@ class UserDeckTile extends StatelessWidget {
                             totalCards: item.deck.totalCards,
                           ),
                           SizedBox(height: 4.0),
-                          Row(
-                            children: [
-                              AnimatedProgressBar(
-                                width: 150,
-                                height: 14,
-                                progress: item.deck.totalLearnedCards /
-                                    item.deck.totalCards,
-                                backgroundColor: const Color(0xffD9D9D9),
-                                progressColor: const Color(0xff40a5e8),
-                                innerProgressColor: const Color(0xff6db7f4),
-                              ),
-                              SizedBox(width: 16.0),
-                              Text(
-                                '${(item.deck.totalLearnedCards / item.deck.totalCards * 100).toStringAsFixed(0)}%',
-                                style: TextStyle(
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w900,
+                          (item.deck.totalCards == 0)
+                              ? const Text(
+                                  'Chưa có thẻ nào',
+                                  style: TextStyle(
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.w600),
+                                )
+                              : Row(
+                                  children: [
+                                    AnimatedProgressBar(
+                                      width: 150,
+                                      height: 14,
+                                      progress: item.deck.totalLearnedCards /
+                                          item.deck.totalCards,
+                                      backgroundColor: const Color(0xffD9D9D9),
+                                      progressColor: const Color(0xff40a5e8),
+                                      innerProgressColor:
+                                          const Color(0xff6db7f4),
+                                    ),
+                                    SizedBox(width: 16.0),
+                                    Text(
+                                      '${(item.deck.totalLearnedCards / item.deck.totalCards * 100).toStringAsFixed(0)}%',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
@@ -157,7 +166,7 @@ class UserDeckTile extends StatelessWidget {
 }
 
 class PublicDeckTile extends StatelessWidget {
-  final DeckWithReviewCards item;
+  final DeckWithCards item;
   final Widget iconButtonTopRight;
   final Widget iconButtonBottomRight;
 
@@ -168,6 +177,7 @@ class PublicDeckTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MyColors myColors = Theme.of(context).extension<MyColors>()!;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -179,7 +189,7 @@ class PublicDeckTile extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: myColors.deckTileBackground,
           borderRadius: BorderRadius.circular(30.0),
         ),
         margin: const EdgeInsets.only(left: 5.0, right: 5.0, bottom: 8),
@@ -188,7 +198,7 @@ class PublicDeckTile extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: myColors.deckTileBackground,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
@@ -256,7 +266,6 @@ class PublicDeckTile extends StatelessWidget {
                                 "Số lượng: ",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -264,7 +273,6 @@ class PublicDeckTile extends StatelessWidget {
                                 "${item.deck.totalCards}",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
@@ -286,7 +294,6 @@ class PublicDeckTile extends StatelessWidget {
                                 "Đánh giá: ",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -294,7 +301,6 @@ class PublicDeckTile extends StatelessWidget {
                                 "${item.deck.rating.toStringAsFixed(1)}",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
@@ -311,7 +317,6 @@ class PublicDeckTile extends StatelessWidget {
                                 " ~ ${item.deck.views}",
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  color: Colors.black,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),

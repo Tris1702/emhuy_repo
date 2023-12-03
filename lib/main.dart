@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ri.dart';
@@ -19,29 +21,38 @@ import 'package:vietcard/screens/login_screen.dart';
 import 'package:vietcard/screens/profile_screen.dart';
 import 'package:vietcard/screens/search_screen.dart';
 import 'package:vietcard/services/api_handler.dart';
+import 'package:vietcard/services/theme_manager.dart';
 
 import 'custom_widgets/custom_physics.dart';
 import 'custom_widgets/snackbar.dart';
 
 Future<void> main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await Hive.initFlutter('VietCard');
   } else {
     await Hive.initFlutter();
   }
   await openHiveBox('settings');
+  await openHiveBox('publicDeckViews');
   await openHiveBox('cache', limit: true);
   await dotenv.load();
   await initAPIHandler();
   await initLogging();
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider<ThemeNotifier>(
+    create: (_) => new ThemeNotifier(),
+    child: MyApp(),
+  ));
+  await Future.delayed(const Duration(milliseconds: 1));
+  FlutterNativeSplash.remove();
 }
 
 Future<void> initAPIHandler() async {
   final APIHanlder apiHanlder = APIHanlder();
+  GetIt.I.registerSingleton<APIHanlder>(apiHanlder);
   await apiHanlder.initData();
   apiHanlder.initNecessaryData();
-  GetIt.I.registerSingleton<APIHanlder>(apiHanlder);
 }
 
 Future<void> openHiveBox(String boxName, {bool limit = false}) async {
@@ -76,29 +87,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final ValueNotifier<int> _selectedIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
+
   DateTime? backButtonPressTime;
-  bool isLoggedIn = false;
-  final _storage = const FlutterSecureStorage();
-  void checkLogin() async {
-    String? refreshToken = await _storage.read(key: 'refresh_token');
-    if (refreshToken == null) {
-      isLoggedIn = false;
-      return;
-    } else {
-      APIHelper.refreshTokens(refreshToken).then((result) {
-        if (result['accessToken']!.isNotEmpty) {
-          // Token refresh successful, update your app's authentication state
-          // Access the new refresh token and access token as needed
-          String newRefreshToken = result['newRefreshToken']!;
-          String accessToken = result['accessToken']!;
-          isLoggedIn = true;
-        } else {
-          // Token refresh failed or unauthorized, handle accordingly
-          isLoggedIn = false;
-        }
-      });
-    }
-    isLoggedIn = false;
+
+  void _onRebuildMainPage() {
+    setState(() {});
+  }
+
+  void _onResetHomePage() {
+    _selectedIndex.value = 0;
   }
 
   void _onItemTapped(int index) {
@@ -130,16 +127,10 @@ class _MyAppState extends State<MyApp> {
     return;
   }
 
-  void _onSuccessLogIn() {
-    setState(() {
-      isLoggedIn = true;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    checkLogin();
+    GetIt.I<APIHanlder>().setOnRebuildMainPage(_onRebuildMainPage);
   }
 
   @override
@@ -150,103 +141,123 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: MyApp.title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Builder(builder: (context) {
-        return isLoggedIn ? Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: PopScope(
-            canPop: false,
-            onPopInvoked: (bool didPop) {
-              if (didPop) {
-                return;
-              }
-              handleWillPop(context);
-            },
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: PageView(
-                            physics: NeverScrollableScrollPhysics(),
-                            onPageChanged: (index) {
-                              _selectedIndex.value = index;
-                            },
-                            controller: _pageController,
-                            children: [
-                              HomePage(),
-                              SearchPage(
-                                query: "",
+    return Consumer<ThemeNotifier>(
+        builder: (context, theme, _) => MaterialApp(
+              title: MyApp.title,
+              theme: theme.getTheme(),
+              home: ValueListenableBuilder<bool>(
+                  valueListenable: GetIt.I<APIHanlder>().isLoggedIn,
+                  builder: (context, value, child) {
+                    return value
+                        ? Scaffold(
+                            resizeToAvoidBottomInset: false,
+                            body: PopScope(
+                              canPop: false,
+                              onPopInvoked: (bool didPop) {
+                                if (didPop) {
+                                  return;
+                                }
+                                handleWillPop(context);
+                              },
+                              child: SafeArea(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: PageView(
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              onPageChanged: (index) {
+                                                _selectedIndex.value = index;
+                                              },
+                                              controller: _pageController,
+                                              children: [
+                                                HomePage(),
+                                                SearchPage(
+                                                  query: "",
+                                                ),
+                                                // GamePage(),
+                                                ProfilePage(
+                                                  setDarkMode: () {
+                                                    theme.setDarkMode();
+                                                  },
+                                                  setLightMode: () {
+                                                    theme.setLightMode();
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              // GamePage(),
-                              ProfilePage(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          bottomNavigationBar: SafeArea(
-            child: ValueListenableBuilder(
-                valueListenable: _selectedIndex,
-                builder: (BuildContext context, int indexValue, Widget? child) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 100),
-                    height: 60,
-                    child: SalomonBottomBar(
-                      currentIndex: indexValue,
-                      onTap: (i) => _onItemTapped(i),
-                      items: [
-                        /// Home
-                        SalomonBottomBarItem(
-                          // icon: Icon(Iconsax.home_1),
-                          icon: const Iconify(Ri.home_smile_2_fill,
-                              color: Colors.purple),
-                          title: Text("Home"),
-                          selectedColor: Colors.purple,
-                        ),
+                            ),
+                            bottomNavigationBar: SafeArea(
+                              child: ValueListenableBuilder(
+                                  valueListenable: _selectedIndex,
+                                  builder: (BuildContext context,
+                                      int indexValue, Widget? child) {
+                                    return AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 100),
+                                      height: 60,
+                                      child: SalomonBottomBar(
+                                        currentIndex: indexValue,
+                                        onTap: (i) => _onItemTapped(i),
+                                        items: [
+                                          /// Home
+                                          SalomonBottomBarItem(
+                                            // icon: Icon(Iconsax.home_1),
+                                            icon: const Iconify(
+                                                Ri.home_smile_2_fill,
+                                                color: Colors.purple),
+                                            title: Text("Home"),
+                                            selectedColor: Colors.purple,
+                                          ),
 
-                        /// Search
-                        SalomonBottomBarItem(
-                          icon: const Iconify(
-                            Ri.search_eye_fill,
-                            color: Colors.orange,
-                          ),
-                          title: Text("Search"),
-                          selectedColor: Colors.orange,
-                        ),
+                                          /// Search
+                                          SalomonBottomBarItem(
+                                            icon: const Iconify(
+                                              Ri.search_eye_fill,
+                                              color: Colors.orange,
+                                            ),
+                                            title: Text("Search"),
+                                            selectedColor: Colors.orange,
+                                          ),
 
-                        /// Profile
-                        // SalomonBottomBarItem(
-                        //   icon: Iconify(Ri.game_fill, color: Colors.green),
-                        //   title: Text("Game"),
-                        //   selectedColor: Colors.green,
-                        // ),
+                                          /// Profile
+                                          // SalomonBottomBarItem(
+                                          //   icon: Iconify(Ri.game_fill, color: Colors.green),
+                                          //   title: Text("Game"),
+                                          //   selectedColor: Colors.green,
+                                          // ),
 
-                        /// Profile
-                        SalomonBottomBarItem(
-                          icon: Iconify(Ri.user_5_fill, color: Colors.blue),
-                          title: Text("Profile"),
-                          selectedColor: Colors.blue,
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-          ),
-        ) : LoginPage(onSuccessLogIn: _onSuccessLogIn);
-      }),
-    );
+                                          /// Profile
+                                          SalomonBottomBarItem(
+                                            icon: Iconify(Ri.user_5_fill,
+                                                color: Colors.blue),
+                                            title: Text("Profile"),
+                                            selectedColor: Colors.blue,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          )
+                        : LoginPage(onResetHomePage: _onResetHomePage);
+                  }),
+            ));
+  }
+
+  void changeTheme(bool isDarkMode) {
+    setState(() {
+      isDarkMode = isDarkMode;
+    });
   }
 }

@@ -6,7 +6,7 @@ class ShowSnackBar {
       BuildContext context,
       String title, {
         SnackBarAction? action,
-        Duration duration = const Duration(seconds: 1),
+        Duration duration = const Duration(milliseconds: 3000),
         bool noAction = false,
       }) {
     try {
@@ -14,17 +14,14 @@ class ShowSnackBar {
         SnackBar(
           duration: duration,
           elevation: 6,
-          backgroundColor: Colors.grey[900],
           behavior: SnackBarBehavior.floating,
           content: Text(
             title,
-            style: const TextStyle(color: Colors.white),
           ),
           action: noAction
               ? null
               : action ??
               SnackBarAction(
-                textColor: Theme.of(context).colorScheme.secondary,
                 label: "OK",
                 onPressed: () {},
               ),

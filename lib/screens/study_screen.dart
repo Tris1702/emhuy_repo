@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/teenyicons.dart';
@@ -8,13 +10,22 @@ import 'package:pausable_timer/pausable_timer.dart';
 import 'package:vietcard/entity/card.dart';
 
 import '../custom_widgets/animated_progress_bar.dart';
+import '../custom_widgets/confirm.dart';
+import '../custom_widgets/error_dialog.dart';
 import '../custom_widgets/long_button.dart';
+import '../custom_widgets/snackbar.dart';
+import '../helpers/api.dart';
+import '../helpers/loader_dialog.dart';
+import '../helpers/validate.dart';
+import '../services/api_handler.dart';
+import '../services/theme_manager.dart';
 
 //ignore: must_be_immutable
 class StudyScreen extends StatefulWidget {
-  List<Flashcard> questions;
+  final String deckID;
+  final List<Flashcard> questions;
 
-  StudyScreen({required this.questions});
+  StudyScreen({required this.deckID, required this.questions});
   @override
   _StudyScreenState createState() => _StudyScreenState();
 }
@@ -35,6 +46,8 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
   int numCorrect = 0;
   int numIncorrect = 0;
   int _secondsTimer = 0;
+  final List<String> learntCardsID = [];
+  final List<bool> isCorrects = [];
   late final PausableTimer _timer;
   @override
   void initState() {
@@ -50,6 +63,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
     }
     currentCardType = widget.questions[0].cardType;
     totalCards = blueCard * 2 + redCard + greenCard;
+    widget.questions[0].answers.shuffle();
     // Start the timer when the widget is created
     _startTimer();
     // Add the observer to listen for app lifecycle changes
@@ -102,7 +116,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
       widget.questions.add(q);
     }
     if (isCorrect) {
-      xpEarned += 10;
+      xpEarned += 5;
       numCorrect++;
     } else {
       numIncorrect++;
@@ -110,12 +124,15 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
     currentCardType = (currentQuestionIndex < widget.questions.length - 1
         ? widget.questions[currentQuestionIndex + 1].cardType
         : 3);
+    learntCardsID.add(widget.questions[currentQuestionIndex].id);
+    isCorrects.add(isCorrect);
   }
 
   void _navigateToNextQuestion(bool isCorrect) {
     if (currentQuestionIndex < widget.questions.length - 1) {
       questionsUpdated.value ^= true;
       currentQuestionIndex++;
+      widget.questions[currentQuestionIndex].answers.shuffle();
       _pageController.animateToPage(
         currentQuestionIndex,
         duration: Duration(milliseconds: 300),
@@ -128,15 +145,38 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
         context,
         MaterialPageRoute(
             builder: (context) => EndStudyScreen(
+                deckID: widget.deckID,
                 xpEarned: xpEarned,
                 timeInSeconds: _secondsTimer,
-                accuracy: 100 * numCorrect ~/ (numCorrect + numIncorrect))),
+                accuracy: 100 * numCorrect ~/ (numCorrect + numIncorrect),
+                learntCardsID: learntCardsID,
+                isCorrects: isCorrects)),
       );
     }
   }
 
+  void onExitLearn() {
+    _timer.cancel();
+    if (numCorrect + numIncorrect == 0) {
+      Navigator.pop(context);
+      return;
+    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EndStudyScreen(
+              deckID: widget.deckID,
+              xpEarned: xpEarned,
+              timeInSeconds: _secondsTimer,
+              accuracy: 100 * numCorrect ~/ (numCorrect + numIncorrect),
+              learntCardsID: learntCardsID,
+              isCorrects: isCorrects)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final MyColors myColors = Theme.of(context).extension<MyColors>()!;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -146,12 +186,14 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                   valueListenable: appBarUpdated,
                   builder: (context, value, _) {
                     return StudyAppBar(
-                        blueCard: blueCard,
-                        redCard: redCard,
-                        greenCard: greenCard,
-                        totalCards: totalCards,
-                        xpEarned: xpEarned,
-                        currentCardType: currentCardType);
+                      blueCard: blueCard,
+                      redCard: redCard,
+                      greenCard: greenCard,
+                      totalCards: totalCards,
+                      xpEarned: xpEarned,
+                      currentCardType: currentCardType,
+                      onExitLearn: onExitLearn,
+                    );
                   }),
               Expanded(
                 child: ValueListenableBuilder<bool>(
@@ -167,9 +209,10 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                               _pc.open();
                             },
                             child: SlidingUpPanel(
+                                color: myColors.panelColor!,
                                 controller: _pc,
                                 minHeight: 85,
-                                maxHeight: 490,
+                                maxHeight: 520,
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(24.0),
                                   topRight: Radius.circular(24.0),
@@ -182,8 +225,8 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                         _navigateToNextQuestion,
                                     increaseProgress: _increaseProgress),
                                 collapsed: Container(
-                                  decoration: const BoxDecoration(
-                                      color: Colors.white,
+                                  decoration: BoxDecoration(
+                                      color: myColors.panelColor,
                                       borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(24.0),
                                         topRight: Radius.circular(24.0),
@@ -202,7 +245,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                           ), // Icon left-aligned
                                           Text("XEM ĐÁP ÁN",
                                               style: TextStyle(
-                                                  color: Color(0xffA6A6C6),
+                                                  color: Colors.grey[400],
                                                   fontSize: 20,
                                                   fontWeight: FontWeight
                                                       .bold)), // Text in the middle
@@ -216,17 +259,71 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                     ],
                                   ),
                                 ),
-                                body: ListView(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(18.0),
-                                      child: Text(
-                                        widget.questions[currentQuestionIndex]
-                                            .question,
-                                        style: TextStyle(fontSize: 20.0),
+                                body: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(18.0),
+                                        child: Text(
+                                          widget.questions[currentQuestionIndex]
+                                              .question,
+                                          style: TextStyle(fontSize: 20.0),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      validateURL(widget
+                                              .questions[currentQuestionIndex]
+                                              .questionImgURL)
+                                          ? Column(
+                                              children: [
+                                                Container(
+                                                  constraints: BoxConstraints(
+                                                    maxWidth:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.91,
+                                                    maxHeight:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.3,
+                                                  ),
+                                                  child: CachedNetworkImage(
+                                                    fit: BoxFit.cover,
+                                                    errorWidget:
+                                                        (context, _, __) =>
+                                                            const Image(
+                                                      fit: BoxFit.cover,
+                                                      image: AssetImage(
+                                                          'assets/image_loading.jpg'),
+                                                    ),
+                                                    imageUrl: widget
+                                                        .questions[
+                                                            currentQuestionIndex]
+                                                        .questionImgURL,
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            const Image(
+                                                      fit: BoxFit.cover,
+                                                      image: AssetImage(
+                                                          'assets/image_loading.jpg'),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10.0),
+                                                Text(
+                                                  widget
+                                                      .questions[
+                                                          currentQuestionIndex]
+                                                      .questionImgLabel,
+                                                  style:
+                                                      TextStyle(fontSize: 16.0),
+                                                ),
+                                              ],
+                                            )
+                                          : SizedBox()
+                                    ],
+                                  ),
                                 )),
                           );
                         },
@@ -248,6 +345,7 @@ class StudyAppBar extends StatelessWidget {
   final int totalCards;
   final int xpEarned;
   final int currentCardType;
+  final Function() onExitLearn;
 
   StudyAppBar(
       {required this.blueCard,
@@ -255,7 +353,8 @@ class StudyAppBar extends StatelessWidget {
       required this.greenCard,
       required this.totalCards,
       required this.xpEarned,
-      required this.currentCardType});
+      required this.currentCardType,
+      required this.onExitLearn});
 
   @override
   Widget build(BuildContext context) {
@@ -268,13 +367,25 @@ class StudyAppBar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, size: 32), // Left arrow icon
+                  icon: Icon(Icons.arrow_back, size: 32),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the study screen
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmationDialog(
+                            onConfirm: () {
+                              onExitLearn();
+                            },
+                          );
+                        });
                   },
                 ),
               ),
-              AnimatedProgressBar(progress: progress, width: 280, height: 20,), // Progress bar
+              AnimatedProgressBar(
+                progress: progress,
+                width: 280,
+                height: 20,
+              ), // Progress bar
               IconButton(
                 icon: Icon(Icons.more_vert, size: 32), // More icon
                 onPressed: () {
@@ -406,21 +517,18 @@ class PanelHeaderRectangle extends StatelessWidget {
                       width: 15, // Adjust the width of the inner rectangle
                       height: 5, // Adjust the height of the inner rectangle
                       decoration: BoxDecoration(
-                        color: Color(
-                            0xffC7C6C6), // Change the inner rectangle color
+                        color: Color(0xffC7C6C6),
                         borderRadius: BorderRadius.circular(
                             10), // Adjust the inner border radius
                       ),
                     ),
                   ),
                   Container(
-                    width: 30, // Adjust the width of the inner rectangle
-                    height: 5, // Adjust the height of the inner rectangle
+                    width: 30,
+                    height: 5,
                     decoration: BoxDecoration(
-                      color:
-                          Color(0xffC7C6C6), // Change the inner rectangle color
-                      borderRadius: BorderRadius.circular(
-                          10), // Adjust the inner border radius
+                      color: Color(0xffC7C6C6),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ]
@@ -428,24 +536,20 @@ class PanelHeaderRectangle extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0, bottom: 3.0),
                     child: Container(
-                      width: 30, // Adjust the width of the inner rectangle
-                      height: 5, // Adjust the height of the inner rectangle
+                      width: 30,
+                      height: 5,
                       decoration: BoxDecoration(
-                        color: Color(
-                            0xffC7C6C6), // Change the inner rectangle color
-                        borderRadius: BorderRadius.circular(
-                            10), // Adjust the inner border radius
+                        color: Color(0xffC7C6C6),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                   Container(
-                    width: 15, // Adjust the width of the inner rectangle
-                    height: 5, // Adjust the height of the inner rectangle
+                    width: 15,
+                    height: 5,
                     decoration: BoxDecoration(
-                      color:
-                          Color(0xffC7C6C6), // Change the inner rectangle color
-                      borderRadius: BorderRadius.circular(
-                          10), // Adjust the inner border radius
+                      color: Color(0xffC7C6C6),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ],
@@ -477,9 +581,13 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
   int isCorrect = -1;
   @override
   Widget build(BuildContext context) {
+    final MyColors myColors = Theme.of(context).extension<MyColors>()!;
     return Column(
       children: [
         PanelHeaderRectangle(reverseOrder: false),
+        SizedBox(
+          height: 30,
+        ),
         Expanded(
           child: Stack(
             children: [
@@ -528,40 +636,90 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                               end: Alignment.topCenter, // End at the top
                               stops: [0.04, 0.04], // Adjust the stops as needed
                               colors: [
-                                widget.selectedAnswers[index]
-                                    ? (isCheckAnswerButtonClicked
-                                        ? (widget.answers[index] ==
-                                                widget.correctAnswer
-                                            ? Color(0xff85f274)
-                                            : Color(0xfff27474))
-                                        : Color(0xff74CCF2))
-                                    : Color(0xffC7C6C6),
-                                widget.selectedAnswers[index]
-                                    ? (isCheckAnswerButtonClicked
-                                        ? (widget.answers[index] ==
-                                                widget.correctAnswer
-                                            ? Color(0xffdefcd9)
-                                            : Color(0xfffcd9d9))
-                                        : Color(0xffd9f6fc))
-                                    : Colors.white
+                                (isCheckAnswerButtonClicked
+                                    ? (widget.answers[index] ==
+                                            widget.correctAnswer
+                                        ? Color(0xff85f274)
+                                        : (widget.selectedAnswers[index]
+                                            ? Color(0xfff27474)
+                                            : myColors.grey300!))
+                                    : widget.selectedAnswers[index]
+                                        ? Color(0xff74CCF2)
+                                        : myColors.grey300!),
+                                myColors.panelColor!
                               ],
                             ),
                             border: Border.all(
-                              color: widget.selectedAnswers[index]
-                                  ? (isCheckAnswerButtonClicked
-                                      ? (widget.answers[index] ==
-                                              widget.correctAnswer
-                                          ? Color(0xff85f274)
-                                          : Color(0xfff27474))
-                                      : Color(0xff74CCF2))
-                                  : Color(0xffC7C6C6),
+                              color: (isCheckAnswerButtonClicked
+                                  ? (widget.answers[index] ==
+                                          widget.correctAnswer
+                                      ? Color(0xff85f274)
+                                      : (widget.selectedAnswers[index]
+                                          ? Color(0xfff27474)
+                                          : myColors.grey300!))
+                                  : widget.selectedAnswers[index]
+                                      ? Color(0xff74CCF2)
+                                      : myColors.grey300!),
                               width: 3.0,
                             ),
                             borderRadius: BorderRadius.circular(12.0),
                           ),
                           child: Center(
-                            child: Text(
-                              widget.answers[index], // Display full answer
+                            child: Stack(
+                              children: [
+                                // Text widget with maxLines set to 3
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6.0),
+                                  child: Center(
+                                    child: Text(
+                                      widget.answers[index],
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 3,
+                                      style: TextStyle(fontSize: 17),
+                                    ),
+                                  ),
+                                ),
+                                // GestureDetector for handling tap
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Chi tiết"),
+                                          content: Text(
+                                            widget.answers[index],
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                          actionsPadding: EdgeInsets.only(
+                                              left: 5, right: 15, bottom: 10),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text(
+                                                'OK',
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(4),
+                                    alignment: Alignment.topRight,
+                                    child: Iconify(
+                                      Ic.outline_zoom_out_map,
+                                      color: Colors.grey[500],
+                                      size: 34,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -571,15 +729,16 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                 ),
               ),
               Positioned(
-                bottom: isCheckAnswerButtonClicked ? 0 : -130,
+                bottom: isCheckAnswerButtonClicked ? 0 : -140,
                 left: 0,
                 right: 0,
                 child: AnimatedContainer(
                   duration: Duration(
                       milliseconds: 180), // Adjust the animation duration
-                  height: isCheckAnswerButtonClicked ? 130 : 0,
-                  color:
-                      (isCorrect == 1 ? Color(0xffd6fcb8) : Color(0xfffcb8b8)),
+                  height: isCheckAnswerButtonClicked ? 140 : 0,
+                  color: (isCorrect == 1
+                      ? myColors.greenBackground
+                      : myColors.redBackground),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Align(
@@ -589,8 +748,8 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                           Iconify(
                             Teenyicons.tick_circle_solid,
                             color: (isCorrect == 1
-                                ? Color(0xff3a8c40)
-                                : Color(0xffc43535)),
+                                ? Color(0xff1cb028)
+                                : Color(0xffe02828)),
                             size: 20,
                           ),
                           SizedBox(width: 10),
@@ -600,10 +759,10 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                                 : 'Không chính xác!'),
                             style: TextStyle(
                               color: (isCorrect == 1
-                                  ? Color(0xff3a8c40)
-                                  : Color(0xffc43535)),
+                                  ? Color(0xff1cb028)
+                                  : Color(0xffe02828)),
                               fontWeight: FontWeight.w900,
-                              fontSize: 20,
+                              fontSize: 25,
                             ),
                           ),
                         ],
@@ -618,16 +777,18 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                 child: LongButton(
                   text: (isCheckAnswerButtonClicked ? 'TIẾP TỤC' : 'KIỂM TRA'),
                   outerBoxColor: (isCorrect == -1
-                      ? Color(0xffC7C6C6)
+                      ? myColors.buttonTextColor!
                       : ((!isCheckAnswerButtonClicked || isCorrect == 1)
                           ? Color(0xff3a8c40)
                           : Color(0xffc43535))), // Set your desired color
                   innerBoxColor: (isCorrect == -1
-                      ? Color(0xfff0f2f0)
+                      ? myColors.buttonIdleColor!
                       : ((!isCheckAnswerButtonClicked || isCorrect == 1)
                           ? Color(0xff75E840)
                           : Color(0xffe84040))), // Set your desired color
-                  textColor: Colors.white, // Set your desired color
+                  textColor: (isCorrect == -1
+                      ? myColors.buttonTextColor!
+                      : Colors.white), // Set your desired color
                   onTap: () {
                     if (isCorrect == -1) {
                       return;
@@ -716,6 +877,7 @@ class _StatsBoxState extends State<StatsBox>
 
   @override
   Widget build(BuildContext context) {
+    final MyColors myColors = Theme.of(context).extension<MyColors>()!;
     return Container(
       // Wrap with a Container to give it a fixed size
       width: 110, // Adjust the width as needed
@@ -743,7 +905,7 @@ class _StatsBoxState extends State<StatsBox>
                       child: Text(
                         widget.title,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: myColors.panelColor,
                           fontSize: 13,
                           fontWeight: FontWeight.w900,
                         ),
@@ -759,7 +921,7 @@ class _StatsBoxState extends State<StatsBox>
                   width: 99,
                   height: 65,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: myColors.panelColor,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Row(
@@ -850,15 +1012,21 @@ class _StatsBoxState extends State<StatsBox>
 }
 
 class EndStudyScreen extends StatelessWidget {
+  final String deckID;
   final int xpEarned;
   final int timeInSeconds;
   final int accuracy;
+  final List<String> learntCardsID;
+  final List<bool> isCorrects;
 
   const EndStudyScreen({
     Key? key,
+    required this.deckID,
     required this.xpEarned,
     required this.timeInSeconds,
     required this.accuracy,
+    required this.learntCardsID,
+    required this.isCorrects,
   }) : super(key: key);
 
   @override
@@ -913,7 +1081,19 @@ class EndStudyScreen extends StatelessWidget {
               innerBoxColor: Color(0xff46a4e8),
               textColor: Colors.white,
               onTap: () {
-                Navigator.of(context).pop();
+                showLoaderDialog(context);
+                APIHelper.submitReviewCardsRequest(
+                        deckID, learntCardsID, isCorrects, xpEarned)
+                    .then((reviewCardsResponse) {
+                  if (reviewCardsResponse.containsKey("error")) {
+                    Navigator.pop(context);
+                  } else {
+                    GetIt.I<APIHanlder>()
+                        .onReviewCardsSuccess(deckID, reviewCardsResponse);
+                    Navigator.pop(context);
+                    Navigator.of(context).pop();
+                  }
+                });
               },
             ),
           ),
