@@ -271,7 +271,7 @@ class APIHanlder {
     Flashcard card = Flashcard.fromJson(result['card']);
     for (DeckWithCards d in userDecks) {
       if (d.deck.id == deckID) {
-        card.index = d.cards.last.index + 1;
+        card.index = (d.cards.lastOrNull?.index ?? 0) + 1;
         d.cards.add(card);
       }
       d.deck.totalCards++;

@@ -72,7 +72,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
 
   void _startTimer() {
     _timer = PausableTimer.periodic(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       () {
         _secondsTimer++;
       },
@@ -135,7 +135,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
       widget.questions[currentQuestionIndex].answers.shuffle();
       _pageController.animateToPage(
         currentQuestionIndex,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
@@ -201,7 +201,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                     builder: (context, value, _) {
                       return PageView.builder(
                         controller: _pageController,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: widget.questions.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
@@ -227,7 +227,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                 collapsed: Container(
                                   decoration: BoxDecoration(
                                       color: myColors.panelColor,
-                                      borderRadius: BorderRadius.only(
+                                      borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(24.0),
                                         topRight: Radius.circular(24.0),
                                       )),
@@ -238,8 +238,8 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(15.0),
+                                          const Padding(
+                                            padding: EdgeInsets.all(15.0),
                                             child: Iconify(Ic.baseline_swipe_up,
                                                 color: Colors.blue),
                                           ), // Icon left-aligned
@@ -249,8 +249,8 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                                   fontSize: 20,
                                                   fontWeight: FontWeight
                                                       .bold)), // Text in the middle
-                                          Padding(
-                                            padding: const EdgeInsets.all(15.0),
+                                          const Padding(
+                                            padding: EdgeInsets.all(15.0),
                                             child: Iconify(Ic.baseline_swipe_up,
                                                 color: Colors.blue),
                                           ), // Icon right-aligned
@@ -267,7 +267,7 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                         child: Text(
                                           widget.questions[currentQuestionIndex]
                                               .question,
-                                          style: TextStyle(fontSize: 20.0),
+                                          style: const TextStyle(fontSize: 20.0),
                                         ),
                                       ),
                                       validateURL(widget
@@ -310,18 +310,18 @@ class _StudyScreenState extends State<StudyScreen> with WidgetsBindingObserver {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(height: 10.0),
+                                                const SizedBox(height: 10.0),
                                                 Text(
                                                   widget
                                                       .questions[
                                                           currentQuestionIndex]
                                                       .questionImgLabel,
                                                   style:
-                                                      TextStyle(fontSize: 16.0),
+                                                      const TextStyle(fontSize: 16.0),
                                                 ),
                                               ],
                                             )
-                                          : SizedBox()
+                                          : const SizedBox()
                                     ],
                                   ),
                                 )),
@@ -367,7 +367,7 @@ class StudyAppBar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back, size: 32),
+                  icon: const Icon(Icons.arrow_back, size: 32),
                   onPressed: () {
                     showDialog(
                         context: context,
@@ -387,7 +387,7 @@ class StudyAppBar extends StatelessWidget {
                 height: 20,
               ), // Progress bar
               IconButton(
-                icon: Icon(Icons.more_vert, size: 32), // More icon
+                icon: const Icon(Icons.more_vert, size: 32), // More icon
                 onPressed: () {
                   // Handle more options
                 },
@@ -409,7 +409,7 @@ class StudyAppBar extends StatelessWidget {
                           text: blueCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(color: Colors.blue, offset: Offset(0, -3))
+                              const Shadow(color: Colors.blue, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
                             decoration: (currentCardType == 0
@@ -431,7 +431,7 @@ class StudyAppBar extends StatelessWidget {
                           text: redCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(color: Colors.red, offset: Offset(0, -3))
+                              const Shadow(color: Colors.red, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
                             decoration: (currentCardType == 1
@@ -453,7 +453,7 @@ class StudyAppBar extends StatelessWidget {
                           text: greenCard.toString(),
                           style: TextStyle(
                             shadows: [
-                              Shadow(color: Colors.green, offset: Offset(0, -3))
+                              const Shadow(color: Colors.green, offset: Offset(0, -3))
                             ],
                             color: Colors.transparent,
                             decoration: (currentCardType == 2
@@ -477,14 +477,14 @@ class StudyAppBar extends StatelessWidget {
                 // Right Aligned XP Display
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(0xffFFE6A7),
+                    color: const Color(0xffFFE6A7),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   padding:
-                      EdgeInsets.only(left: 10, right: 10, top: 6, bottom: 6),
+                      const EdgeInsets.only(left: 10, right: 10, top: 6, bottom: 6),
                   child: Text(
                     xpEarned.toString() + ' XP',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xffDB7210),
                       fontWeight: FontWeight.w900,
                       fontSize: 15,
@@ -517,7 +517,7 @@ class PanelHeaderRectangle extends StatelessWidget {
                       width: 15, // Adjust the width of the inner rectangle
                       height: 5, // Adjust the height of the inner rectangle
                       decoration: BoxDecoration(
-                        color: Color(0xffC7C6C6),
+                        color: const Color(0xffC7C6C6),
                         borderRadius: BorderRadius.circular(
                             10), // Adjust the inner border radius
                       ),
@@ -527,7 +527,7 @@ class PanelHeaderRectangle extends StatelessWidget {
                     width: 30,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: Color(0xffC7C6C6),
+                      color: const Color(0xffC7C6C6),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -539,7 +539,7 @@ class PanelHeaderRectangle extends StatelessWidget {
                       width: 30,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: Color(0xffC7C6C6),
+                        color: const Color(0xffC7C6C6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -548,7 +548,7 @@ class PanelHeaderRectangle extends StatelessWidget {
                     width: 15,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: Color(0xffC7C6C6),
+                      color: const Color(0xffC7C6C6),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -585,7 +585,7 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
     return Column(
       children: [
         PanelHeaderRectangle(reverseOrder: false),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
         Expanded(
@@ -594,9 +594,9 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
               SizedBox(
                 height: 380,
                 child: Container(
-                  padding: EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0),
+                  padding: const EdgeInsets.only(top: 10.0, left: 16.0, right: 16.0),
                   child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10.0, // Adjust the horizontal spacing
                       mainAxisSpacing: 10.0, // Adjust the vertical spacing
@@ -628,7 +628,7 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment
@@ -639,12 +639,12 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                                 (isCheckAnswerButtonClicked
                                     ? (widget.answers[index] ==
                                             widget.correctAnswer
-                                        ? Color(0xff85f274)
+                                        ? const Color(0xff85f274)
                                         : (widget.selectedAnswers[index]
-                                            ? Color(0xfff27474)
+                                            ? const Color(0xfff27474)
                                             : myColors.grey300!))
                                     : widget.selectedAnswers[index]
-                                        ? Color(0xff74CCF2)
+                                        ? const Color(0xff74CCF2)
                                         : myColors.grey300!),
                                 myColors.panelColor!
                               ],
@@ -653,12 +653,12 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                               color: (isCheckAnswerButtonClicked
                                   ? (widget.answers[index] ==
                                           widget.correctAnswer
-                                      ? Color(0xff85f274)
+                                      ? const Color(0xff85f274)
                                       : (widget.selectedAnswers[index]
-                                          ? Color(0xfff27474)
+                                          ? const Color(0xfff27474)
                                           : myColors.grey300!))
                                   : widget.selectedAnswers[index]
-                                      ? Color(0xff74CCF2)
+                                      ? const Color(0xff74CCF2)
                                       : myColors.grey300!),
                               width: 3.0,
                             ),
@@ -676,7 +676,7 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                                       widget.answers[index],
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 3,
-                                      style: TextStyle(fontSize: 17),
+                                      style: const TextStyle(fontSize: 17),
                                     ),
                                   ),
                                 ),
@@ -687,19 +687,19 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text("Chi tiết"),
+                                          title: const Text("Chi tiết"),
                                           content: Text(
                                             widget.answers[index],
-                                            style: TextStyle(fontSize: 18),
+                                            style: const TextStyle(fontSize: 18),
                                           ),
-                                          actionsPadding: EdgeInsets.only(
+                                          actionsPadding: const EdgeInsets.only(
                                               left: 5, right: 15, bottom: 10),
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () {
                                                 Navigator.of(context).pop();
                                               },
-                                              child: Text(
+                                              child: const Text(
                                                 'OK',
                                                 style: TextStyle(fontSize: 18),
                                               ),
@@ -710,7 +710,7 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                                     );
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(4),
+                                    padding: const EdgeInsets.all(4),
                                     alignment: Alignment.topRight,
                                     child: Iconify(
                                       Ic.outline_zoom_out_map,
@@ -733,7 +733,7 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                 left: 0,
                 right: 0,
                 child: AnimatedContainer(
-                  duration: Duration(
+                  duration: const Duration(
                       milliseconds: 180), // Adjust the animation duration
                   height: isCheckAnswerButtonClicked ? 140 : 0,
                   color: (isCorrect == 1
@@ -748,19 +748,19 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                           Iconify(
                             Teenyicons.tick_circle_solid,
                             color: (isCorrect == 1
-                                ? Color(0xff1cb028)
-                                : Color(0xffe02828)),
+                                ? const Color(0xff1cb028)
+                                : const Color(0xffe02828)),
                             size: 20,
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text(
                             (isCorrect == 1
                                 ? 'Chính xác!'
                                 : 'Không chính xác!'),
                             style: TextStyle(
                               color: (isCorrect == 1
-                                  ? Color(0xff1cb028)
-                                  : Color(0xffe02828)),
+                                  ? const Color(0xff1cb028)
+                                  : const Color(0xffe02828)),
                               fontWeight: FontWeight.w900,
                               fontSize: 25,
                             ),
@@ -779,13 +779,13 @@ class _AnswersExpandedPanelState extends State<AnswersExpandedPanel> {
                   outerBoxColor: (isCorrect == -1
                       ? myColors.buttonTextColor!
                       : ((!isCheckAnswerButtonClicked || isCorrect == 1)
-                          ? Color(0xff3a8c40)
-                          : Color(0xffc43535))), // Set your desired color
+                          ? const Color(0xff3a8c40)
+                          : const Color(0xffc43535))), // Set your desired color
                   innerBoxColor: (isCorrect == -1
                       ? myColors.buttonIdleColor!
                       : ((!isCheckAnswerButtonClicked || isCorrect == 1)
-                          ? Color(0xff75E840)
-                          : Color(0xffe84040))), // Set your desired color
+                          ? const Color(0xff75E840)
+                          : const Color(0xffe84040))), // Set your desired color
                   textColor: (isCorrect == -1
                       ? myColors.buttonTextColor!
                       : Colors.white), // Set your desired color
@@ -843,7 +843,7 @@ class _StatsBoxState extends State<StatsBox>
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1200),
     );
 
     _animation = Tween<double>(begin: 0.0, end: widget.number.toDouble())
@@ -885,7 +885,7 @@ class _StatsBoxState extends State<StatsBox>
       child: Center(
         child: AnimatedOpacity(
           opacity: opacityValue,
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
@@ -900,7 +900,7 @@ class _StatsBoxState extends State<StatsBox>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SizedBox(height: 3.5),
+                    const SizedBox(height: 3.5),
                     Center(
                       child: Text(
                         widget.title,
@@ -928,7 +928,7 @@ class _StatsBoxState extends State<StatsBox>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Iconify(widget.icon, size: 28, color: widget.color),
-                      SizedBox(width: 7),
+                      const SizedBox(width: 7),
                       if (widget.title == "TIME") ...[
                         // Special case for "TIME" title
                         AnimatedBuilder(
@@ -1035,8 +1035,8 @@ class EndStudyScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 300),
-          Padding(
+          const SizedBox(height: 300),
+          const Padding(
             padding: EdgeInsets.only(bottom: 20),
             child: Text(
               'HOÀN THÀNH!',
@@ -1054,31 +1054,31 @@ class EndStudyScreen extends StatelessWidget {
                 title: 'XP EARNED',
                 icon: Ph.lightning_fill,
                 number: xpEarned,
-                color: Color(0xfff0dd1a),
+                color: const Color(0xfff0dd1a),
                 suffix: " XP",
               ),
               StatsBox(
                 title: 'TIME',
                 icon: Ic.twotone_access_time,
                 number: timeInSeconds,
-                color: Color(0xff46a4e8),
+                color: const Color(0xff46a4e8),
                 suffix: "",
               ),
               StatsBox(
                 title: 'ACCURACY',
                 icon: Ph.target_duotone,
                 number: accuracy,
-                color: Color(0xff54d158),
+                color: const Color(0xff54d158),
                 suffix: "%",
               ),
             ],
           ),
-          SizedBox(height: 220),
+          const SizedBox(height: 220),
           Expanded(
             child: LongButton(
               text: 'TIẾP TỤC',
-              outerBoxColor: Color(0xff1783d1),
-              innerBoxColor: Color(0xff46a4e8),
+              outerBoxColor: const Color(0xff1783d1),
+              innerBoxColor: const Color(0xff46a4e8),
               textColor: Colors.white,
               onTap: () {
                 showLoaderDialog(context);

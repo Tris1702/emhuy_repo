@@ -14,7 +14,6 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 import 'package:vietcard/helpers/api.dart';
-import 'package:vietcard/helpers/logging.dart';
 import 'package:vietcard/screens/game_screen.dart';
 import 'package:vietcard/screens/home/home_screen.dart';
 import 'package:vietcard/screens/login_screen.dart';
@@ -39,7 +38,6 @@ Future<void> main() async {
   await openHiveBox('cache', limit: true);
   await dotenv.load();
   await initAPIHandler();
-  await initLogging();
   runApp(ChangeNotifierProvider<ThemeNotifier>(
     create: (_) => new ThemeNotifier(),
     child: MyApp(),

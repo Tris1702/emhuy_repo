@@ -30,15 +30,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        body: Column(
-          children: <Widget>[
-            getAppBarHome(context),
-            getUserDeckWidget(),
-            SizedBox(
-              height: 15,
-            ),
-            getPublicDeckWidget()
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              getAppBarHome(context),
+              getUserDeckWidget(),
+              SizedBox(
+                height: 15,
+              ),
+              getPublicDeckWidget()
+            ],
+          ),
         ),
       ),
     );
